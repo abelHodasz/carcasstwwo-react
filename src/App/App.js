@@ -6,6 +6,7 @@ import { CookiesProvider } from "react-cookie";
 
 import Home from "../pages/Home/Home";
 import Lobby from "../pages/Lobby/Lobby";
+import Game from "../pages/Game/Game";
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function Content() {
             <Switch>
                 <Route path="/" exact component={Home} />
                 <Route path="/lobby/:code" component={Lobby} />
+                <Route path="/game/:code" component={Game} />
             </Switch>
         </Router>
     );
