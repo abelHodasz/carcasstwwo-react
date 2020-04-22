@@ -11,7 +11,14 @@ export default function Lobby(props) {
     const { code } = useParams();
     const [cookies, setCookie, removeCookie] = useCookies(["user"]);
     const [hubConnection, setHubConnection] = useState(null);
-
+    const [users, setUsers] = useState([]);
+    const usersJsX = (
+        <ul>
+            {users.map((user) => (
+                <li>{user.name}</li>
+            ))}
+        </ul>
+    );
     useEffect(() => {
         if (cookies.user && cookies.user.isHost) setIsHost(true);
         const hubConn = new HubConnectionBuilder()
@@ -34,12 +41,20 @@ export default function Lobby(props) {
                 .catch((e) => console.log(e));
     }, [hubConnection]);
 
+    const onStartGame = () => {};
+
     if (error)
         return (
             <div className="lobby">
                 <h1>Unexpected error: {error}</h1>
             </div>
         );
-    else if (joined) return <div className="lobby"></div>;
+    else if (joined)
+        return (
+            <div className="lobby">
+                <h3>Joined:</h3>
+                {usersJsX}
+            </div>
+        );
     else return <div className="lobby">Waiting for server...</div>;
 }
