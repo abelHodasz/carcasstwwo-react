@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "../../axios/axios";
 import { useCookies } from "react-cookie";
 import { HubConnectionBuilder } from "@aspnet/signalr";
+import { Button } from "@material-ui/core";
 
 export default function Lobby(props) {
     const [joined, setJoined] = useState(false);
@@ -54,6 +55,13 @@ export default function Lobby(props) {
             <div className="lobby">
                 <h3>Joined:</h3>
                 {usersJsX}
+                {isHost ? (
+                    <Button className="start-game-btn" onClick={onStartGame}>
+                        Start Game
+                    </Button>
+                ) : (
+                    "Waiting for Host to start the game..."
+                )}
             </div>
         );
     else return <div className="lobby">Waiting for server...</div>;
