@@ -1,5 +1,4 @@
 import axios from "axios";
-import { loadState } from "../localStorage";
 
 const API_URL = "https://localhost:5001/api/v1";
 const TIMEOUT = 5000;
@@ -19,10 +18,6 @@ const isHandlerEnabled = (config = {}) => {
 //request interceptor, add headers
 const requestHandler = (request) => {
     if (isHandlerEnabled(request)) {
-        const state = loadState();
-        if (state != undefined && state.token.length > 0) {
-            request.headers["Authorization"] = "Bearer " + state.token;
-        }
     }
 
     return request;
