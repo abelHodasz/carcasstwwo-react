@@ -5,12 +5,11 @@ import { useCookies } from "react-cookie";
 import { HubConnectionBuilder } from "@aspnet/signalr";
 
 export default function Lobby(props) {
-    const [joined, setJoined] = useState(false);
-    const [error, setError] = useState("");
-    const [isHost, setIsHost] = useState(false);
     const { code } = useParams();
+
     const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-    const [hubConnection, setHubConnection] = useState(null);
+    const [hubConnection, setHubConnection] = useState(props.hubConnection);
+
     const [users, setUsers] = useState([]);
     const usersJsX = (
         <ul>
@@ -19,42 +18,8 @@ export default function Lobby(props) {
             ))}
         </ul>
     );
-    useEffect(() => {
-        if (cookies.user && cookies.user.isHost) setIsHost(true);
-        const hubConn = new HubConnectionBuilder()
-            .withUrl("https://localhost:5000/lobby")
-            .build();
-        setHubConnection(hubConn);
-    }, []);
-
-    useEffect(() => {
-        if (cookies.user) {
-            setJoined(true);
-        }
-    }, [cookies]);
-
-    useEffect(() => {
-        if (hubConnection != null)
-            hubConnection
-                .start()
-                .then(() => console.log("Conntection started!"))
-                .catch((e) => console.log(e));
-    }, [hubConnection]);
 
     const onStartGame = () => {};
 
-    if (error)
-        return (
-            <div className="lobby">
-                <h1>Unexpected error: {error}</h1>
-            </div>
-        );
-    else if (joined)
-        return (
-            <div className="lobby">
-                <h3>Joined:</h3>
-                {usersJsX}
-            </div>
-        );
-    else return <div className="lobby">Waiting for server...</div>;
+    return <div className="lobby">Joined lobby : {code}</div>;
 }
