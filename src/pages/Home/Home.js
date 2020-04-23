@@ -5,6 +5,7 @@ import { HubConnectionBuilder } from "@aspnet/signalr";
 export default function Home(props) {
     const [name, setName] = useState("");
     const [hubConnection, setHubConnection] = useState(null);
+    const [room, setRoom] = useState("");
 
     useEffect(() => {
         const hubConn = new HubConnectionBuilder()
@@ -35,6 +36,19 @@ export default function Home(props) {
         }
     };
 
+    const onJoinLobby = (event) => {
+        if (name.length > 0 && room.length == 6) {
+            hubConnection
+                .invoke("AddToGroup", room)
+                .then(() => {
+                    props.history.push(`/lobby/${room}`);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
+    };
+
     return (
         <div>
             <TextField
@@ -46,8 +60,20 @@ export default function Home(props) {
                     setName(e.target.value);
                 }}
             ></TextField>
+            <TextField
+                required
+                className="room-input"
+                id="standard-basic"
+                label="Room Code"
+                onChange={(e) => {
+                    setRoom(e.target.value);
+                }}
+            ></TextField>
             <Button className="create-lobby-btn" onClick={onCreateLobby}>
                 Create Lobby
+            </Button>
+            <Button className="join-lobby-btn" onClick={onJoinLobby}>
+                Join Lobby
             </Button>
         </div>
     );
