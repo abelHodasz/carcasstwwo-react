@@ -4,3 +4,12 @@ html {
     margin: 0;
     box-sizing: border-box;
 }
+
+.app {
+    background: rgb(222, 222, 222);
+    background: radial-gradient(
+        circle,
+        rgb(141, 141, 141, 0.5) 0%,
+        rgba(255, 255, 255, 1) 100%
+    );
+}

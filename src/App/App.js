@@ -24,7 +24,7 @@ function Content() {
             <Switch>
                 <Route path="/" exact component={Home} />
                 <Route path="/lobby/:code" component={Lobby} />
-                <Route path="/game/:code" component={Game} />
+                <Route path="/game/" component={Game} />
             </Switch>
         </Router>
     );
