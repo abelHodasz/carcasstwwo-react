@@ -18,7 +18,11 @@ export default function Lobby(props) {
             ))}
         </ul>
     );
-
+    /*
+    hubConnection.on("Send", (message) => {
+        console.log(message);
+    });
+*/
     const onStartGame = () => {};
 
     return <div className="lobby">Joined lobby : {code}</div>;
