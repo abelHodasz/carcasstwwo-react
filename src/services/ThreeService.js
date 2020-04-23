@@ -1,5 +1,5 @@
 import * as THREE from "three";
-
+import image from "../images/2_2.jpg";
 let scene, camera, cube, renderer;
 
 export const init = (mount) => {
@@ -18,8 +18,11 @@ export const init = (mount) => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     var geometry = new THREE.BoxGeometry(1, 1, 1);
-    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    cube = new THREE.Mesh(geometry, material);
+    var img = new THREE.MeshBasicMaterial({
+        map: THREE.ImageUtils.loadTexture(image),
+    });
+    img.map.needsUpdate = true;
+    cube = new THREE.Mesh(geometry, img);
     scene.add(cube);
 
     mount.appendChild(renderer.domElement);
