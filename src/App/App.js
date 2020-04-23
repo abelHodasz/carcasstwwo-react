@@ -7,12 +7,15 @@ import { CookiesProvider } from "react-cookie";
 import Home from "../pages/Home/Home";
 import Lobby from "../pages/Lobby/Lobby";
 import Game from "../pages/Game/Game";
+import HubConnectionProvider from "../context/HubConnectionContext";
 
 function App() {
     return (
         <div className="app">
             <CookiesProvider>
-                <Content />
+                <HubConnectionProvider>
+                    <Content />
+                </HubConnectionProvider>
             </CookiesProvider>
         </div>
     );

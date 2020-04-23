@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../../axios/axios";
 import { useCookies } from "react-cookie";
 import { HubConnectionBuilder } from "@aspnet/signalr";
+import { HubConnectionContext } from "../../context/HubConnectionContext";
 
 export default function Lobby(props) {
     const { code } = useParams();
 
     const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-    const [hubConnection, setHubConnection] = useState(props.hubConnection);
+    const [hubConnection, setHubConnection] = useContext(HubConnectionContext);
 
     const [users, setUsers] = useState([]);
     const usersJsX = (
