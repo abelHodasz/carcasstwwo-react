@@ -22,6 +22,7 @@ export default function Home(props) {
                 .start()
                 .then(() => {
                     console.log("Conntection started!");
+
                     hubConnection.on("Send", (message) => console.log(message));
                 })
                 .catch((e) => console.log(e));
@@ -30,7 +31,7 @@ export default function Home(props) {
     const onCreateLobby = (event) => {
         if (name.length > 0) {
             hubConnection
-                .invoke("CreateGroup")
+                .invoke("CreateGroup", name)
                 .then((groupName) => {
                     props.history.push(`/lobby/${groupName}`);
                 })
@@ -43,7 +44,7 @@ export default function Home(props) {
     const onJoinLobby = (event) => {
         if (name.length > 0 && room.length === 6) {
             hubConnection
-                .invoke("AddToGroup", room)
+                .invoke("AddToGroup", room, name)
                 .then(() => {
                     props.history.push(`/lobby/${room}`);
                 })
