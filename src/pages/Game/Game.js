@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import * as ThreeService from "../../services/ThreeService";
+import ThreeService from "../../services/ThreeService";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
 
     useEffect(() => {
         if (mount != null) {
-            ThreeService.init(mount);
-            ThreeService.animate();
+            const three = new ThreeService(mount);
+            three.init();
+            three.animate();
         }
     }, [mount]);
 
