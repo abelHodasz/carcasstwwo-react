@@ -14,10 +14,9 @@ export default function Game(props) {
             const three = new ThreeService(mount);
             const tile = new Tile(tile1);
             const board = new Board();
-            const piece = new Piece();
+            const piece = new Piece(three.scene);
             three.scene.add(board.mesh);
             three.scene.add(tile.mesh);
-            tile.y = 1;
             three.init();
             three.animate();
         }
