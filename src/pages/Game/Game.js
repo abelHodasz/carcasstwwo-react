@@ -3,6 +3,8 @@ import tile1 from "../../images/1_4.png";
 
 import ThreeService from "../../services/ThreeService";
 import Tile from "../../services/Tile";
+import Board from "../../services/Board";
+import Piece from "../../services/Piece";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
@@ -11,6 +13,9 @@ export default function Game(props) {
         if (mount != null) {
             const three = new ThreeService(mount);
             const tile = new Tile(tile1);
+            const board = new Board();
+            const piece = new Piece();
+            three.scene.add(board.mesh);
             three.scene.add(tile.mesh);
             tile.y = 1;
             three.init();
