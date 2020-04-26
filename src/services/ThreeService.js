@@ -89,8 +89,8 @@ export default class ThreeService {
 
         //gui settings
         //camera settings
-        camera.position.set(0.3, 1, 1);
-        camera.lookAt(0.5, 0 - 0.5);
+        camera.position.set(0.3, 3, 3);
+        camera.lookAt(0, 0, 0);
 
         //grid settings
         grid.position.y = 0.001;
