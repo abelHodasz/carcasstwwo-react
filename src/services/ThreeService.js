@@ -36,7 +36,7 @@ const SPOT_INTENSITY = 4;
 export default class ThreeService {
     constructor(mount) {
         this.scene = new Scene();
-        this.gui = new GUI();
+        //this.gui = new GUI();
         this.camera = new PerspectiveCamera(
             CAMERA_FOV,
             ASPECT_RATIO,
@@ -93,7 +93,6 @@ export default class ThreeService {
         });
 
         //gui settings
-        scene.add(grid);
 
         //camera settings
         camera.position.set(0.5, 5, 0.5);
