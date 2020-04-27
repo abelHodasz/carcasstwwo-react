@@ -56,7 +56,7 @@ export default class Carcassonne {
 
         const mouseup = (e) => {
             e.preventDefault();
-            if (tile.isInPlace) {
+            if (tile.isInPlace && e.button == 0) {
                 this.tiles.push(tile);
 
                 document.removeEventListener("mousemove", mousemove);
