@@ -23,7 +23,9 @@ export default function Home(props) {
                 .then(() => {
                     console.log("Conntection started!");
 
-                    hubConnection.on("Send", (message) => console.log(message));
+                    hubConnection.on("Send", (message, members) =>
+                        console.log(message, members)
+                    );
                 })
                 .catch((e) => console.log(e));
     }, [hubConnection]);
@@ -44,7 +46,7 @@ export default function Home(props) {
     const onJoinLobby = (event) => {
         if (name.length > 0 && room.length === 6) {
             hubConnection
-                .invoke("AddToGroup", room, name)
+                .invoke("AddToGroup", room, name, false)
                 .then(() => {
                     props.history.push(`/lobby/${room}`);
                 })

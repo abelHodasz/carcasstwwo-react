@@ -19,6 +19,7 @@ export default function Lobby(props) {
             ))}
         </ul>
     );
+
     /*
     hubConnection.on("Send", (message) => {
         console.log(message);
