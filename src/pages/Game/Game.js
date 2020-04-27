@@ -13,7 +13,6 @@ export default function Game(props) {
         if (mount != null) {
             const three = new ThreeService(mount);
             const tile = new Tile(tile1);
-            //tile.y = 1;
             const board = new Board(50, 50, 0.1);
             const piece = new Piece(three.scene);
             three.scene.add(board.mesh);

@@ -10,9 +10,11 @@ import {
     PCFSoftShadowMap,
     ReinhardToneMapping,
     CameraHelper,
+    MOUSE,
 } from "three";
 import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { findAllByDisplayValue } from "@testing-library/react";
 
 const CAMERA_FOV = 60;
 const ASPECT_RATIO = window.innerWidth / window.innerHeight;
@@ -94,8 +96,8 @@ export default class ThreeService {
         scene.add(grid);
 
         //camera settings
-        camera.position.set(0, 5, 0);
-        camera.lookAt(0, 0, 0);
+        camera.position.set(0.5, 5, 0.5);
+        camera.lookAt(0.5, 0, -0.5);
 
         //grid settings
         grid.position.y = 0.001;
@@ -107,7 +109,6 @@ export default class ThreeService {
         renderer.toneMappingExposure = 1;
         renderer.toneMapping = ReinhardToneMapping;
         renderer.setSize(window.innerWidth, window.innerHeight);
-
         //axesHelper settings
         scene.add(axesHelper);
 
@@ -129,7 +130,12 @@ export default class ThreeService {
         scene.add(spotLight);
 
         //controls settings
-
+        controls.enableKeys = false;
+        controls.enableRotate = false;
+        controls.mouseButtons = {
+            RIGHT: MOUSE.PAN,
+        };
+        controls.target.set(0.5, 0, -0.5);
         //resize properly
         window.addEventListener("resize", () => {
             this.renderer.setSize(window.innerWidth, window.innerHeight);
