@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import tile1 from "../../images/1_4.png";
+import "./Game.css";
 
 import ThreeService from "../../services/ThreeService";
 import Tile from "../../services/Tile";
@@ -22,5 +23,9 @@ export default function Game(props) {
         }
     }, [mount]);
 
-    return <div ref={(ref) => setMount(ref)}></div>;
+    return (
+        <div ref={(ref) => setMount(ref)}>
+            <div className="game"></div>
+        </div>
+    );
 }
