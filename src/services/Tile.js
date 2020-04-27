@@ -21,6 +21,7 @@ export default class Tile {
             roundedRectShape,
             extrudeSettings
         );
+        geometry.translate(-0.5, -0.5, 0);
         this.mesh = new THREE.Mesh(geometry, img);
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
@@ -32,6 +33,7 @@ export default class Tile {
                 if (n.material.map) n.material.map.anisotropy = 16;
             }
         });
+        this.isInPlace = false;
     }
 
     get x() {

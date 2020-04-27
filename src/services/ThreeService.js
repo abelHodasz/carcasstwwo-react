@@ -11,6 +11,8 @@ import {
     ReinhardToneMapping,
     CameraHelper,
     MOUSE,
+    Raycaster,
+    Vector2,
 } from "three";
 import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -56,6 +58,8 @@ export default class ThreeService {
         this.controls = new OrbitControls(this.camera, mount);
         this.cameraHelper = new CameraHelper(this.spotLight.shadow.camera);
         mount.appendChild(this.renderer.domElement);
+        this.raycaster = new Raycaster();
+        this.mouse = new Vector2(0, 0);
     }
 
     init() {
@@ -144,10 +148,18 @@ export default class ThreeService {
 
         //cameraHelper settings
         //scene.add(cameraHelper);
+
+        //raycaster, mouse
+        document.addEventListener("mousemove", (e) => {
+            e.preventDefault();
+            this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
     }
 
     animate = () => {
         this.renderer.render(this.scene, this.camera);
+        this.raycaster.setFromCamera(this.mouse, this.camera);
         requestAnimationFrame(this.animate);
     };
 }
