@@ -33,15 +33,11 @@ export default class Carcassonne {
         const mousemove = (e) => {
             e.preventDefault();
 
-            var vector = new Vector3(three.mouse.x, three.mouse.y, 1);
-            vector.unproject(three.camera);
+            var mouseVector = new Vector3(three.mouse.x, three.mouse.y, 1);
 
-            var dir = vector.sub(three.camera.position).normalize();
-            var distance = -three.camera.position.y / dir.y;
-            var pos = three.camera.position
-                .clone()
-                .add(dir.multiplyScalar(distance));
-            tile.mesh.position.copy(pos);
+            const position = getMousePosition(three.camera, mouseVector);
+
+            tile.mesh.position.copy(position);
             tile.y = 0.5;
 
             tile.isInPlace = false;
@@ -70,4 +66,12 @@ export default class Carcassonne {
 
         document.addEventListener("mouseup", mouseup);
     }
+}
+
+function getMousePosition(camera, mouse) {
+    mouse.unproject(camera);
+    var dir = mouse.sub(camera.position).normalize();
+    var distance = -camera.position.y / dir.y;
+    var pos = camera.position.clone().add(dir.multiplyScalar(distance));
+    return pos;
 }
