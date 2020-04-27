@@ -9,6 +9,7 @@ import {
     SpotLightHelper,
     PCFSoftShadowMap,
     ReinhardToneMapping,
+    CameraHelper,
 } from "three";
 import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -25,10 +26,10 @@ const RENDERER_SETTINGS = {
 };
 const AXES_HELPER_SIZE = 500;
 const HEM_SKY_COLOR = 0xffeeb1;
-const HEM_GROUND_COLOR = 0x080820;
+const HEM_GROUND_COLOR = 0x080808;
 const HEM_INTENSITY = 1;
 const SPOT_COLOR = 0xffaa95c;
-const SPOT_INTENSITY = 1;
+const SPOT_INTENSITY = 4;
 
 export default class ThreeService {
     constructor(mount) {
@@ -51,7 +52,7 @@ export default class ThreeService {
         this.spotLight = new SpotLight(SPOT_COLOR, SPOT_INTENSITY);
         this.spotLightHelper = new SpotLightHelper(this.spotLight);
         this.controls = new OrbitControls(this.camera, mount);
-
+        this.cameraHelper = new CameraHelper(this.spotLight.shadow.camera);
         mount.appendChild(this.renderer.domElement);
     }
 
@@ -67,6 +68,7 @@ export default class ThreeService {
             spotLight,
             spotLightHelper,
             controls,
+            cameraHelper,
         ] = [
             this.scene,
             this.gui,
@@ -78,18 +80,21 @@ export default class ThreeService {
             this.spotLight,
             this.spotLightHelper,
             this.controls,
+            this.cameraHelper,
         ];
         //scene settings
         scene.traverse((child) => {
-            if (child.isMesh) {
+            if (child.isMesh || child.isObject3D) {
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
         });
 
         //gui settings
+        scene.add(grid);
+
         //camera settings
-        camera.position.set(0.3, 3, 3);
+        camera.position.set(0, 5, 0);
         camera.lookAt(0, 0, 0);
 
         //grid settings
@@ -99,7 +104,7 @@ export default class ThreeService {
         //renderer settings
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = PCFSoftShadowMap;
-        renderer.toneMappingExposure = 2;
+        renderer.toneMappingExposure = 1;
         renderer.toneMapping = ReinhardToneMapping;
         renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -110,8 +115,17 @@ export default class ThreeService {
         scene.add(hemLight);
 
         //spotlight Helper settings
+        //scene.add(spotLightHelper);
 
+        //spotlight settings
         spotLight.castShadow = true;
+        spotLight.position.y = 15;
+        spotLight.position.z = 8;
+        spotLight.position.x = -1;
+        //If I leave it in, models shadow dissapears, if I take it out it looks bad
+        spotLight.shadow.bias = -0.00001;
+        spotLight.shadow.mapSize.width = 1024 * 8;
+        spotLight.shadow.mapSize.height = 1024 * 8;
         scene.add(spotLight);
 
         //controls settings
@@ -122,6 +136,9 @@ export default class ThreeService {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
         });
+
+        //cameraHelper settings
+        //scene.add(cameraHelper);
     }
 
     animate = () => {
