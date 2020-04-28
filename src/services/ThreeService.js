@@ -14,7 +14,7 @@ import {
     Raycaster,
     Vector2,
 } from "three";
-import { GUI } from "dat.gui";
+//import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { findAllByDisplayValue } from "@testing-library/react";
 
