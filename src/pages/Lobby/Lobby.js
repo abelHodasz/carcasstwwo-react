@@ -15,17 +15,28 @@ export default function Lobby(props) {
     const usersJsX = (
         <ul>
             {users.map((user) => (
-                <li>{user.name}</li>
+                <li key={user.connectionId}>{user.name}</li>
             ))}
         </ul>
     );
 
-    /*
-    hubConnection.on("Send", (message) => {
-        console.log(message);
-    });
-*/
+    useEffect(() => {
+        if (hubConnection != null) {
+            hubConnection.on("GroupNames", (members) => setUsers(members));
+            hubConnection.invoke("GetGroupMembers", code);
+        }
+    }, [code, hubConnection]);
+
     const onStartGame = () => {};
 
-    return <div className="lobby">Joined lobby : {code}</div>;
+    if (users.length !== 0) {
+        return (
+            <div>
+                <div className="lobby">Joined lobby : {code}</div>
+                <div className="users">{usersJsX}</div>
+            </div>
+        );
+    } else {
+        return <div className="lobby">Joined lobby : {code}</div>;
+    }
 }
