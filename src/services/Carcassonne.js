@@ -1,5 +1,5 @@
 import ThreeService from "./ThreeService";
-import tile1 from "../images/1_4.png";
+import tile1 from "../images/20_4.png";
 import Tile from "./Tile";
 import Board from "./Board";
 import Piece from "./Piece";
@@ -35,16 +35,25 @@ export default class Carcassonne {
 
             var mouseVector = new Vector3(three.mouse.x, three.mouse.y, 1);
 
-            const position = getMousePosition(three.camera, mouseVector);
+            const position = getMousePositionInPlane(three.camera, mouseVector);
 
             tile.mesh.position.copy(position);
             tile.y = 0.5;
 
             tile.isInPlace = false;
             for (const slot of possibleSlots) {
-                const dist = tile.mesh.position.distanceTo(slot);
+                const dist = tile.mesh.position.distanceTo(slot.position);
                 if (dist < 0.5) {
-                    tile.mesh.position.set(slot.x, 0.1, slot.z);
+                    tile.mesh.position.set(
+                        slot.position.x,
+                        0.1,
+                        slot.position.z
+                    );
+                    tile.mesh.rotation.set(
+                        -0.5 * Math.PI,
+                        0,
+                        (slot.rotations[0] * Math.PI) / 180
+                    );
                     tile.isInPlace = true;
                 }
             }
@@ -62,13 +71,15 @@ export default class Carcassonne {
             }
         };
 
+        const keypressed = (e) => {};
+
         document.addEventListener("mousemove", mousemove);
 
         document.addEventListener("mouseup", mouseup);
     }
 }
 
-function getMousePosition(camera, mouse) {
+function getMousePositionInPlane(camera, mouse) {
     mouse.unproject(camera);
     var dir = mouse.sub(camera.position).normalize();
     var distance = -camera.position.y / dir.y;

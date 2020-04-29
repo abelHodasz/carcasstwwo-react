@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { TextField, Button, Box } from "@material-ui/core";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import { HubConnectionBuilder } from "@aspnet/signalr";
+import "./Home.css";
 
 export default function Home(props) {
     const [name, setName] = useState("");
@@ -53,7 +54,7 @@ export default function Home(props) {
     };
 
     return (
-        <div>
+        <div className="home">
             <Box className="row">
                 <TextField
                     required

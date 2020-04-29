@@ -11,10 +11,12 @@ export default function Game(props) {
     useEffect(() => {
         if (mount != null) {
             const possibleSlots = [
-                new Vector3(0, 0.5, 1),
-                new Vector3(0, 0.5, -1),
-                new Vector3(1, 0.5, 0),
-                new Vector3(-1, 0.5, 0),
+                {
+                    position: new Vector3(0, 0.5, -1),
+                    rotations: [90, 180, 270],
+                },
+                { position: new Vector3(1, 0.5, 0), rotations: [270] },
+                { position: new Vector3(-1, 0.5, 0), rotations: [90] },
             ];
             const carcassonne = new Carcassonne(mount);
             const myTurn = true;
