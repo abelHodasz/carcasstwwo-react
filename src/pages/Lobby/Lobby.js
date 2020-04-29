@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../../axios/axios";
 import { useCookies } from "react-cookie";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import "./Lobby.css";
+import { Button } from "@material-ui/core";
 
 export default function Lobby(props) {
     const { code } = useParams();
@@ -23,17 +23,30 @@ export default function Lobby(props) {
     useEffect(() => {
         if (hubConnection != null) {
             hubConnection.on("GroupNames", (members) => setUsers(members));
+            hubConnection.on("StartGame", (message) => {
+                console.log(message);
+                props.history.push(`/${code}/trialgame`);
+            });
             hubConnection.invoke("GetGroupMembers", code);
         }
-    }, [code, hubConnection]);
+    }, [code, hubConnection, props.history]);
 
-    const onStartGame = () => {};
+    const onStartGame = () => {
+        hubConnection.invoke("StartGame", code);
+    };
 
     if (users.length !== 0) {
         return (
             <div>
                 <div className="lobby">Joined lobby : {code}</div>
                 <div className="users">{usersJsX}</div>
+                <Button
+                    className="start-btn"
+                    color="primary"
+                    onClick={onStartGame}
+                >
+                    Start
+                </Button>
             </div>
         );
     } else {
