@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../../axios/axios";
 import { useCookies } from "react-cookie";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import "./Lobby.css";
 import { Button } from "@material-ui/core";
-import history from "../../App/history";
 
 export default function Lobby(props) {
     const { code } = useParams();
