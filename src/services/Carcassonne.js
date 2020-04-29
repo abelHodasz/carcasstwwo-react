@@ -71,10 +71,14 @@ export default class Carcassonne {
             }
         };
 
-        const keypressed = (e) => {};
+        const keypress = (e) => {
+            if (e.key === "r" || e.key === "R") {
+            }
+            console.log(e.key);
+        };
 
         document.addEventListener("mousemove", mousemove);
-
+        document.addEventListener("keypress", keypress);
         document.addEventListener("mouseup", mouseup);
     }
 }
