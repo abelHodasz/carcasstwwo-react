@@ -23,10 +23,6 @@ export default function Home(props) {
                 .start()
                 .then(() => {
                     console.log("Conntection started!");
-
-                    hubConnection.on("Send", (message, members) =>
-                        console.log(message, members)
-                    );
                 })
                 .catch((e) => console.log(e));
     }, [hubConnection]);
