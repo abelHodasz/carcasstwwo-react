@@ -1,22 +1,21 @@
 body,
 html {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
 }
+
 body {
-    height: 100vh;
+  height: 100vh;
 }
 
 canvas {
-    display: block;
+  display: block;
 }
 
 .app {
-    background: rgb(222, 222, 222);
-    background: radial-gradient(
-        circle,
-        rgb(141, 141, 141, 0.5) 0%,
-        rgba(255, 255, 255, 1) 100%
-    );
+  background: #dedede;
+  background: radial-gradient(circle, white 0%, rgba(141, 141, 141, 0.5) 100%);
 }
+/*# sourceMappingURL=App.css.map */
