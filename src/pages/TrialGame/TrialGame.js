@@ -5,7 +5,7 @@ import { Button } from "@material-ui/core";
 
 export default function TrialGame() {
     const [myTurn, setMyTurn] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState("Waiting for the others");
     const [hubConnection, setHubConnection] = useContext(HubConnectionContext);
     const { code } = useParams();
 

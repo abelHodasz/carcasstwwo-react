@@ -28,9 +28,6 @@ export default function Lobby(props) {
             hubConnection.on("StartGame", (message) => {
                 console.log(message);
                 props.history.push(`/${code}/trialgame`);
-
-                hubConnection.invoke("StartTurn", code);
-                console.log("now invoked startturn");
             });
             hubConnection.invoke("GetGroupMembers", code);
         }
