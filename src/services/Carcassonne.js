@@ -1,6 +1,6 @@
 import ThreeService from "./ThreeService";
 import tile1 from "../images/20_4.png";
-import Tile from "./Tile";
+import { Tile, PlacableTile, Slot } from "./Tile";
 import Board from "./Board";
 import Piece from "./Piece";
 import { Vector3 } from "three";
@@ -8,18 +8,17 @@ import { Vector3 } from "three";
 export default class Carcassonne {
     constructor(mount) {
         this.three = new ThreeService(mount);
-        const tile = new Tile(tile1);
-        this.myTurn = false;
-        this.tiles = [tile];
+        const startingTile = new Tile(tile1);
+        this.tiles = [];
+        this.addTile(startingTile);
         this.currentTile = null;
         this.board = new Board(50, 50, 0.1);
         this.piece = new Piece(this.three.scene);
         this.three.scene.add(this.board.mesh);
-        this.three.scene.add(tile.mesh);
     }
 
-    newTile(img) {
-        const tile = new Tile(img);
+    newTile(img, possibleSlots) {
+        const tile = new PlacableTile(img, possibleSlots);
         this.currentTile = tile;
         tile.y = 1;
         tile.x = this.three.camera.position.x;
@@ -27,65 +26,79 @@ export default class Carcassonne {
         this.three.scene.add(tile.mesh);
     }
 
-    placeTile(possibleSlots) {
-        const [three, tile] = [this.three, this.currentTile];
+    addTile(tile) {
+        this.tiles.push(tile);
+        this.three.scene.add(tile.mesh);
+    }
 
-        const mousemove = (e) => {
-            e.preventDefault();
+    placeTile() {
+        const [tile, three] = [this.currentTile, this.three];
 
-            var mouseVector = new Vector3(three.mouse.x, three.mouse.y, 1);
-
-            const position = getMousePositionInPlane(three.camera, mouseVector);
-
-            tile.mesh.position.copy(position);
-            tile.y = 0.5;
-
-            tile.isInPlace = false;
-            for (const slot of possibleSlots) {
-                const dist = tile.mesh.position.distanceTo(slot.position);
-                if (dist < 0.5) {
-                    tile.mesh.position.set(
-                        slot.position.x,
-                        0.1,
-                        slot.position.z
+        return new Promise((resolve) => {
+            const mousemove = (e) => {
+                const mousePosition = getMousePosition(
+                    three.camera,
+                    three.mouse
+                );
+                tile.mesh.position.copy(mousePosition);
+                tile.y = 0.5;
+                tile.isInPlace = false;
+                for (const slot of tile.possibleSlots) {
+                    const distanceToSlot = tile.mesh.position.distanceTo(
+                        slot.position
                     );
-                    tile.mesh.rotation.set(
-                        -0.5 * Math.PI,
-                        0,
-                        (slot.rotations[0] * Math.PI) / 180
-                    );
-                    tile.isInPlace = true;
+                    if (distanceToSlot < 0.5) {
+                        tile.mesh.position.set(
+                            slot.position.x,
+                            0.1,
+                            slot.position.z
+                        );
+                        tile.mesh.rotation.set(
+                            -0.5 * Math.PI,
+                            0,
+                            (slot.currentRotation * Math.PI) / 180
+                        );
+                        tile.currentSlot = slot;
+                        tile.isInPlace = true;
+                    }
                 }
-            }
-        };
+            };
 
-        const mouseup = (e) => {
-            e.preventDefault();
-            if (tile.isInPlace && e.button == 0) {
-                this.tiles.push(tile);
+            const keypress = (e) => {
+                if (e.key === "r" || e.key === "R") {
+                    tile.currentSlot.rotate();
+                }
+                tile.mesh.rotation.set(
+                    -0.5 * Math.PI,
+                    0,
+                    (tile.currentSlot.currentRotation * Math.PI) / 180
+                );
+            };
 
-                document.removeEventListener("mousemove", mousemove);
-                document.removeEventListener("mouseup", mouseup);
-                tile.y = 0;
-                this.currentTile = null;
-            }
-        };
+            const mouseup = (e) => {
+                e.preventDefault();
+                if (tile.isInPlace && e.button === 0) {
+                    this.tiles.push(tile);
+                    document.removeEventListener("mousemove", mousemove);
+                    document.removeEventListener("keypress", keypress);
+                    document.removeEventListener("mouseup", mouseup);
+                    tile.y = 0;
+                    this.currentTile = null;
+                    resolve();
+                }
+            };
 
-        const keypress = (e) => {
-            if (e.key === "r" || e.key === "R") {
-            }
-            console.log(e.key);
-        };
-
-        document.addEventListener("mousemove", mousemove);
-        document.addEventListener("keypress", keypress);
-        document.addEventListener("mouseup", mouseup);
+            document.addEventListener("mousemove", mousemove);
+            document.addEventListener("keypress", keypress);
+            document.addEventListener("mouseup", mouseup);
+        });
     }
 }
 
-function getMousePositionInPlane(camera, mouse) {
-    mouse.unproject(camera);
-    var dir = mouse.sub(camera.position).normalize();
+function getMousePosition(camera, mouse) {
+    const mouseVector = new Vector3(mouse.x, mouse.y, 1);
+    mouseVector.unproject(camera);
+    var dir = mouseVector.sub(camera.position).normalize();
     var distance = -camera.position.y / dir.y;
     var pos = camera.position.clone().add(dir.multiplyScalar(distance));
     return pos;
