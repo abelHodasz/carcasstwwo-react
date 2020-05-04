@@ -29,7 +29,7 @@ function Content() {
                 <Route path="/" exact component={Home} />
                 <Route path="/:code/trialgame" exact component={TrialGame} />
                 <Route path="/lobby/:code" component={Lobby} />
-                <Route path="/game/" component={Game} />
+                <Route path="/game/:code" component={Game} />
             </Switch>
         </Router>
     );
