@@ -25,7 +25,7 @@ export default function Lobby(props) {
             hubConnection.on("GroupNames", (members) => setUsers(members));
             hubConnection.on("StartGame", (message) => {
                 console.log(message);
-                props.history.push(`/${code}/trialgame`);
+                props.history.push(`/game/${code}`);
             });
             hubConnection.invoke("GetGroupMembers", code);
         }
@@ -37,8 +37,8 @@ export default function Lobby(props) {
 
     if (users.length !== 0) {
         return (
-            <div>
-                <div className="lobby">Joined lobby : {code}</div>
+            <div className="lobby">
+                <div>Joined lobby : {code}</div>
                 <div className="users">{usersJsX}</div>
                 <Button
                     className="start-btn"
