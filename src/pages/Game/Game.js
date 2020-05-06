@@ -16,17 +16,19 @@ export default function Game(props) {
 
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
-            hubConnection.on("Turn", (message, turn) => {
-                const cardId = Math.random() * 24 + 1;
-                const img = getCardImage(cardId);
-                const possibleSlots = [
-                    {
-                        position: new Vector3(0, 0.5, -1),
-                        rotations: [90, 180, 270],
-                    },
-                    { position: new Vector3(1, 0.5, 0), rotations: [270] },
-                    { position: new Vector3(-1, 0.5, 0), rotations: [90] },
-                ];
+            hubConnection.on("Turn", (card, turn) => {
+                const possibleSlots = [];
+                for (const position of card.coordinatesWithRotations) {
+                    possibleSlots.push({
+                        position: new Vector3(
+                            position.coordinate.x,
+                            0.5,
+                            position.coordinate.y
+                        ),
+                        rotations: position.rotations,
+                    });
+                }
+                const img = getCardImage(Math.random() * 24 + 1);
                 carcassonne.newTile(img, possibleSlots);
                 carcassonne
                     .placeTile()
@@ -35,6 +37,9 @@ export default function Game(props) {
             });
             hubConnection.on("EndTurn", (message, turn) => {
                 setMyTurn(turn);
+            });
+            hubConnection.on("RefreshBoard", (card) => {
+                console.log(card);
             });
         }
     }, [code, hubConnection, carcassonne]);
