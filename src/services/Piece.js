@@ -3,9 +3,9 @@ import piece from "../models/Meeple.gltf";
 import { Mesh, MeshLambertMaterial, Box3, Vector3 } from "three";
 
 export default class Piece {
-    constructor(scene) {
+    constructor(scene, color) {
         var loader = new GLTFLoader();
-        this.material = new MeshLambertMaterial({ color: 0xff0000 });
+        this.material = new MeshLambertMaterial({ color });
         this.model = null;
         const loadMethod = (result) => {
             var model = result.scene.children[2];
