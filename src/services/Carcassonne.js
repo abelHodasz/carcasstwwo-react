@@ -14,7 +14,7 @@ export default class Carcassonne {
         this.addTile(startingTile);
         this.currentTile = null;
         this.board = new Board(50, 50, 0.1);
-        this.piece = new Piece(this.three.scene);
+        //this.piece = new Piece(this.three.scene);
         this.three.scene.add(this.board.mesh);
         this._players = [];
     }
