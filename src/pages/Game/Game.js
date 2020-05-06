@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import "./Game.css";
 import img from "../../images/7_2.png";
+import images from "../../images/*.png";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 
@@ -16,15 +17,26 @@ export default function Game(props) {
 
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
-            hubConnection.on("Turn", (message, turn) => {
-                const possibleSlots = [
+            hubConnection.on("Turn", (card, turn) => {
+                console.log(images);
+                const possibleSlots = [];
+                for (const position of card.coordinatesWithRotations) {
+                    possibleSlots.push({
+                        position: new Vector3(
+                            position.coordinate.x,
+                            0.5,
+                            position.coordinate.y
+                        ),
+                        rotations: position.rotations,
+                    });
+                } /*
                     {
                         position: new Vector3(0, 0.5, -1),
                         rotations: [90, 180, 270],
                     },
                     { position: new Vector3(1, 0.5, 0), rotations: [270] },
                     { position: new Vector3(-1, 0.5, 0), rotations: [90] },
-                ];
+                ];*/
                 carcassonne.newTile(img, possibleSlots);
                 carcassonne
                     .placeTile()
@@ -33,6 +45,9 @@ export default function Game(props) {
             });
             hubConnection.on("EndTurn", (message, turn) => {
                 setMyTurn(turn);
+            });
+            hubConnection.on("RefreshBoard", (card) => {
+                console.log(card);
             });
         }
     }, [code, hubConnection, carcassonne]);
