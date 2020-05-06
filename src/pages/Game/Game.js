@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import "./Game.css";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
-import { getCardImage } from "../../Constants/Constants";
+
 import InfoBox from "../../components/InfoBox/InfoBox";
 
 import Carcassonne from "../../services/Carcassonne";
@@ -19,7 +19,6 @@ export default function Game(props) {
         if (hubConnection != null && carcassonne != null) {
             hubConnection.on("Turn", (card, turn) => {
                 const possibleSlots = [];
-                console.log(card);
                 for (const position of card.coordinatesWithRotations) {
                     possibleSlots.push({
                         position: new Vector3(
@@ -30,17 +29,25 @@ export default function Game(props) {
                         rotations: position.rotations,
                     });
                 }
-                const img = getCardImage(card.tileId);
-                carcassonne.newTile(img, possibleSlots);
+                carcassonne.newTile(card.tileId, possibleSlots);
                 const players = [
                     { name: "Ábel", id: 1 },
                     { name: "Iza", id: 1 },
                     { name: "Máté", id: 1 },
                 ];
                 carcassonne.players = players;
-                carcassonne
-                    .placeTile()
-                    .then(() => hubConnection.invoke("EndTurn", code));
+                carcassonne.placeTile().then(() => {
+                    console.log(carcassonne);
+                    const card = {
+                        Coordinate: {
+                            x: carcassonne.currentTile.x,
+                            y: -carcassonne.currentTile.z,
+                        },
+                        CardId: carcassonne.currentTile.cardId,
+                    };
+                    console.log(card);
+                    hubConnection.invoke("EndTurn", code, card);
+                });
                 setMyTurn(turn);
                 console.log(carcassonne.players);
             });

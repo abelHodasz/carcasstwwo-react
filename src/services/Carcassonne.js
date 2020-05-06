@@ -5,6 +5,7 @@ import Board from "./Board";
 import Piece from "./Piece";
 import Player from "./Player";
 import { getMousePosition } from "./UtilService";
+import { getCardImage } from "../Constants/Constants";
 
 export default class Carcassonne {
     constructor(mount, players) {
@@ -12,7 +13,6 @@ export default class Carcassonne {
         const startingTile = new Tile(tile1);
         this.tiles = [];
         this.addTile(startingTile);
-        this.currentTile = null;
         this.board = new Board(50, 50, 0.1);
         //this.piece = new Piece(this.three.scene);
         this.three.scene.add(this.board.mesh);
@@ -29,8 +29,11 @@ export default class Carcassonne {
         return this._players;
     }
 
-    newTile(img, possibleSlots) {
-        const tile = new PlacableTile(img, possibleSlots);
+    newTile(id, possibleSlots) {
+        const img = getCardImage(id);
+        const tile = new PlacableTile(img, possibleSlots, id);
+        console.log("Settings current Tile: ", tile);
+        console.log(this);
         this.currentTile = tile;
         tile.y = 1;
         tile.x = this.three.camera.position.x;
@@ -95,7 +98,6 @@ export default class Carcassonne {
                     document.removeEventListener("keypress", keypress);
                     document.removeEventListener("mouseup", mouseup);
                     tile.y = 0;
-                    this.currentTile = null;
                     resolve();
                 }
             };
