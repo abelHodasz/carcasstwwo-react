@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, Fragment } from "react";
 import { useParams } from "react-router-dom";
 import "./Game.css";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import { getCardImage } from "../../Constants/Constants";
+import { getRandomInt } from "../../services/UtilService";
+import InfoBox from "../../components/InfoBox/InfoBox";
 
 import Carcassonne from "../../services/Carcassonne";
 
@@ -18,6 +20,7 @@ export default function Game(props) {
         if (hubConnection != null && carcassonne != null) {
             hubConnection.on("Turn", (card, turn) => {
                 const possibleSlots = [];
+                console.log(card);
                 for (const position of card.coordinatesWithRotations) {
                     possibleSlots.push({
                         position: new Vector3(
@@ -28,16 +31,26 @@ export default function Game(props) {
                         rotations: position.rotations,
                     });
                 }
-                const img = getCardImage(Math.random() * 24 + 1);
+                const cardId = getRandomInt(24) + 1;
+                const img = getCardImage(cardId);
                 carcassonne.newTile(img, possibleSlots);
+                const players = [
+                    { name: "Ábel", id: 1 },
+                    { name: "Iza", id: 1 },
+                    { name: "Máté", id: 1 },
+                ];
+                carcassonne.players = players;
                 carcassonne
                     .placeTile()
                     .then(() => hubConnection.invoke("EndTurn", code));
                 setMyTurn(turn);
             });
+
             hubConnection.on("EndTurn", (message, turn) => {
+                console.log(message);
                 setMyTurn(turn);
             });
+
             hubConnection.on("RefreshBoard", (card) => {
                 console.log(card);
             });
@@ -54,8 +67,11 @@ export default function Game(props) {
     }, [mount]);
 
     return (
-        <div ref={(ref) => setMount(ref)}>
-            <div className="game"></div>
-        </div>
+        <Fragment>
+            <InfoBox />
+            <div ref={(ref) => setMount(ref)}>
+                <div className="game"></div>
+            </div>
+        </Fragment>
     );
 }

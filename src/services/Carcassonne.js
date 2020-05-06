@@ -3,10 +3,11 @@ import tile1 from "../images/20_4.png";
 import { Tile, PlacableTile, Slot } from "./Tile";
 import Board from "./Board";
 import Piece from "./Piece";
-import { Vector3 } from "three";
+import Player from "./Player";
+import { getMousePosition } from "./UtilService";
 
 export default class Carcassonne {
-    constructor(mount) {
+    constructor(mount, players) {
         this.three = new ThreeService(mount);
         const startingTile = new Tile(tile1);
         this.tiles = [];
@@ -15,6 +16,17 @@ export default class Carcassonne {
         this.board = new Board(50, 50, 0.1);
         this.piece = new Piece(this.three.scene);
         this.three.scene.add(this.board.mesh);
+        this._players = [];
+    }
+
+    set players(value) {
+        this._players = value.map(
+            (player) => new Player(player.name, player.id)
+        );
+    }
+
+    get players() {
+        return this._players;
     }
 
     newTile(img, possibleSlots) {
@@ -93,13 +105,4 @@ export default class Carcassonne {
             document.addEventListener("mouseup", mouseup);
         });
     }
-}
-
-function getMousePosition(camera, mouse) {
-    const mouseVector = new Vector3(mouse.x, mouse.y, 1);
-    mouseVector.unproject(camera);
-    var dir = mouseVector.sub(camera.position).normalize();
-    var distance = -camera.position.y / dir.y;
-    var pos = camera.position.clone().add(dir.multiplyScalar(distance));
-    return pos;
 }
