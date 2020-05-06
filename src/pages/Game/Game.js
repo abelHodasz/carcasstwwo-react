@@ -26,13 +26,12 @@ export default function Game(props) {
                         position: new Vector3(
                             position.coordinate.x,
                             0.5,
-                            position.coordinate.y
+                            position.coordinate.y * -1
                         ),
                         rotations: position.rotations,
                     });
                 }
-                const cardId = getRandomInt(24) + 1;
-                const img = getCardImage(cardId);
+                const img = getCardImage(card.tileId);
                 carcassonne.newTile(img, possibleSlots);
                 const players = [
                     { name: "Ábel", id: 1 },
