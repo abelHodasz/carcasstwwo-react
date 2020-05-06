@@ -4,7 +4,6 @@ import "./Game.css";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import { getCardImage } from "../../Constants/Constants";
-import { getRandomInt } from "../../services/UtilService";
 import InfoBox from "../../components/InfoBox/InfoBox";
 
 import Carcassonne from "../../services/Carcassonne";
@@ -26,13 +25,12 @@ export default function Game(props) {
                         position: new Vector3(
                             position.coordinate.x,
                             0.5,
-                            position.coordinate.y
+                            -position.coordinate.y
                         ),
                         rotations: position.rotations,
                     });
                 }
-                const cardId = getRandomInt(24) + 1;
-                const img = getCardImage(cardId);
+                const img = getCardImage(card.tileId);
                 carcassonne.newTile(img, possibleSlots);
                 const players = [
                     { name: "Ábel", id: 1 },
@@ -44,6 +42,7 @@ export default function Game(props) {
                     .placeTile()
                     .then(() => hubConnection.invoke("EndTurn", code));
                 setMyTurn(turn);
+                console.log(carcassonne.players);
             });
 
             hubConnection.on("EndTurn", (message, turn) => {
