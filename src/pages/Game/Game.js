@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import "./Game.css";
-import img from "../../images/7_2.png";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
+import { getCardImage } from "../../Constants/Constants";
 
 import Carcassonne from "../../services/Carcassonne";
 
@@ -17,6 +17,8 @@ export default function Game(props) {
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
             hubConnection.on("Turn", (message, turn) => {
+                const cardId = Math.random() * 24 + 1;
+                const img = getCardImage(cardId);
                 const possibleSlots = [
                     {
                         position: new Vector3(0, 0.5, -1),
