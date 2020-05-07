@@ -44,7 +44,7 @@ export default function Game(props) {
                             y: -carcassonne.currentTile.z,
                         },
                         CardId: carcassonne.currentTile.cardId,
-                        rotation:
+                        Rotation:
                             carcassonne.currentTile.currentSlot.currentRotation,
                     };
                     hubConnection.invoke("EndTurn", code, card);
