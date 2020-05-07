@@ -24,7 +24,6 @@ export default function Lobby(props) {
         if (hubConnection != null) {
             hubConnection.on("GroupNames", (members) => setUsers(members));
             hubConnection.on("StartGame", (message) => {
-                console.log(message);
                 props.history.push(`/game/${code}`);
             });
             hubConnection.invoke("GetGroupMembers", code);

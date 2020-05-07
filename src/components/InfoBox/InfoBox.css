@@ -1,0 +1,47 @@
+.info-box {
+  color: #d8d8d8;
+  position: absolute;
+  margin: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.info-box .info-icon {
+  -webkit-transition: -webkit-transform 0.4s ease;
+  transition: -webkit-transform 0.4s ease;
+  transition: transform 0.4s ease;
+  transition: transform 0.4s ease, -webkit-transform 0.4s ease;
+}
+
+.info-box .info {
+  margin: 0 0 0 10px;
+  padding: 0;
+  list-style: none;
+  -webkit-transition: opacity 0.4s ease;
+  transition: opacity 0.4s ease;
+  opacity: 0;
+}
+
+.info-box .info li {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.info-box .info li span {
+  margin-left: 2px;
+}
+
+.info-box:hover .info {
+  opacity: 1;
+}
+
+.info-box:hover .info-icon {
+  -webkit-transform: scale(1.2);
+          transform: scale(1.2);
+}
+/*# sourceMappingURL=InfoBox.css.map */

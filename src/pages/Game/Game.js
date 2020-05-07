@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, Fragment } from "react";
 import { useParams } from "react-router-dom";
 import "./Game.css";
-import img from "../../images/7_2.png";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 
+import InfoBox from "../../components/InfoBox/InfoBox";
+
 import Carcassonne from "../../services/Carcassonne";
+import { getCardImage } from "../../Constants/Constants";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
@@ -16,23 +18,58 @@ export default function Game(props) {
 
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
-            hubConnection.on("Turn", (message, turn) => {
-                const possibleSlots = [
-                    {
-                        position: new Vector3(0, 0.5, -1),
-                        rotations: [90, 180, 270],
-                    },
-                    { position: new Vector3(1, 0.5, 0), rotations: [270] },
-                    { position: new Vector3(-1, 0.5, 0), rotations: [90] },
+            hubConnection.on("Turn", (card, turn) => {
+                const possibleSlots = [];
+                for (const position of card.coordinatesWithRotations) {
+                    possibleSlots.push({
+                        position: new Vector3(
+                            position.coordinate.x,
+                            0.5,
+                            -position.coordinate.y
+                        ),
+                        rotations: position.rotations,
+                    });
+                }
+                carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
+                const players = [
+                    { name: "Ábel", id: 1 },
+                    { name: "Iza", id: 1 },
+                    { name: "Máté", id: 1 },
                 ];
-                carcassonne.newTile(img, possibleSlots);
-                carcassonne
-                    .placeTile()
-                    .then(() => hubConnection.invoke("EndTurn", code));
+                carcassonne.players = players;
+                carcassonne.placeTile().then(() => {
+                    const card = {
+                        CardId: carcassonne.currentTile.cardId,
+                        Rotation: carcassonne.currentTile.currentSlot.currentRotation.toString(),
+                        Coordinate: {
+                            x: carcassonne.currentTile.x,
+                            y: -carcassonne.currentTile.z,
+                        },
+                        TileId: carcassonne.currentTile.tileId,
+                    };
+                    hubConnection.invoke("EndTurn", code, card);
+                });
                 setMyTurn(turn);
             });
+
             hubConnection.on("EndTurn", (message, turn) => {
                 setMyTurn(turn);
+            });
+
+            hubConnection.on("RefreshBoard", (card) => {
+                const img = getCardImage(card.tileId);
+
+                const position = new Vector3(
+                    card.coordinate.x,
+                    0,
+                    -card.coordinate.y
+                );
+                carcassonne.createAndAddTile(
+                    img,
+                    card.cardId,
+                    position,
+                    parseInt(card.rotation)
+                );
             });
         }
     }, [code, hubConnection, carcassonne]);
@@ -47,8 +84,11 @@ export default function Game(props) {
     }, [mount]);
 
     return (
-        <div ref={(ref) => setMount(ref)}>
-            <div className="game"></div>
-        </div>
+        <Fragment>
+            <InfoBox />
+            <div ref={(ref) => setMount(ref)}>
+                <div className="game"></div>
+            </div>
+        </Fragment>
     );
 }

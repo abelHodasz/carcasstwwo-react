@@ -3,22 +3,35 @@ import tile1 from "../images/20_4.png";
 import { Tile, PlacableTile, Slot } from "./Tile";
 import Board from "./Board";
 import Piece from "./Piece";
-import { Vector3 } from "three";
+import Player from "./Player";
+import { getMousePosition } from "./UtilService";
+import { getCardImage } from "../Constants/Constants";
 
 export default class Carcassonne {
-    constructor(mount) {
+    constructor(mount, players) {
         this.three = new ThreeService(mount);
         const startingTile = new Tile(tile1);
         this.tiles = [];
         this.addTile(startingTile);
-        this.currentTile = null;
         this.board = new Board(50, 50, 0.1);
-        this.piece = new Piece(this.three.scene);
+        //this.piece = new Piece(this.three.scene);
         this.three.scene.add(this.board.mesh);
+        this._players = [];
     }
 
-    newTile(img, possibleSlots) {
-        const tile = new PlacableTile(img, possibleSlots);
+    set players(value) {
+        this._players = value.map(
+            (player) => new Player(player.name, player.id)
+        );
+    }
+
+    get players() {
+        return this._players;
+    }
+
+    newTile(id, possibleSlots, cardId) {
+        const img = getCardImage(id);
+        const tile = new PlacableTile(img, possibleSlots, id, cardId);
         this.currentTile = tile;
         tile.y = 1;
         tile.x = this.three.camera.position.x;
@@ -29,6 +42,11 @@ export default class Carcassonne {
     addTile(tile) {
         this.tiles.push(tile);
         this.three.scene.add(tile.mesh);
+    }
+
+    createAndAddTile(img, cardId, position, rotation) {
+        const tile = new Tile(img, cardId, position, rotation);
+        this.addTile(tile);
     }
 
     placeTile() {
@@ -83,7 +101,6 @@ export default class Carcassonne {
                     document.removeEventListener("keypress", keypress);
                     document.removeEventListener("mouseup", mouseup);
                     tile.y = 0;
-                    this.currentTile = null;
                     resolve();
                 }
             };
@@ -93,13 +110,4 @@ export default class Carcassonne {
             document.addEventListener("mouseup", mouseup);
         });
     }
-}
-
-function getMousePosition(camera, mouse) {
-    const mouseVector = new Vector3(mouse.x, mouse.y, 1);
-    mouseVector.unproject(camera);
-    var dir = mouseVector.sub(camera.position).normalize();
-    var distance = -camera.position.y / dir.y;
-    var pos = camera.position.clone().add(dir.multiplyScalar(distance));
-    return pos;
 }

@@ -104,7 +104,7 @@ export default class ThreeService {
 
         //grid settings
         grid.position.y = 0.001;
-        scene.add(grid);
+        //scene.add(grid);
 
         //renderer settings
         renderer.shadowMap.enabled = true;
@@ -113,7 +113,7 @@ export default class ThreeService {
         renderer.toneMapping = ReinhardToneMapping;
         renderer.setSize(window.innerWidth, window.innerHeight);
         //axesHelper settings
-        scene.add(axesHelper);
+        //scene.add(axesHelper);
 
         //hemisphere Light setings
         scene.add(hemLight);
