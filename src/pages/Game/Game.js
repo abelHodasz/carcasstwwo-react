@@ -7,6 +7,7 @@ import { HubConnectionContext } from "../../context/HubConnectionContext";
 import InfoBox from "../../components/InfoBox/InfoBox";
 
 import Carcassonne from "../../services/Carcassonne";
+import { getCardImage } from "../../Constants/Constants";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
@@ -37,28 +38,33 @@ export default function Game(props) {
                 ];
                 carcassonne.players = players;
                 carcassonne.placeTile().then(() => {
-                    console.log(carcassonne);
                     const card = {
                         Coordinate: {
                             x: carcassonne.currentTile.x,
                             y: -carcassonne.currentTile.z,
                         },
                         CardId: carcassonne.currentTile.cardId,
+                        rotation:
+                            carcassonne.currentTile.currentSlot.currentRotation,
                     };
-                    console.log(card);
                     hubConnection.invoke("EndTurn", code, card);
                 });
                 setMyTurn(turn);
-                console.log(carcassonne.players);
             });
 
             hubConnection.on("EndTurn", (message, turn) => {
-                console.log(message);
                 setMyTurn(turn);
             });
 
             hubConnection.on("RefreshBoard", (card) => {
+                const img = getCardImage(card.cardId);
                 console.log(card);
+                const position = new Vector3(
+                    card.coordinate.x,
+                    0,
+                    -card.coordinate.y
+                );
+                carcassonne.createAndAddTile(img, card.cardId, position);
             });
         }
     }, [code, hubConnection, carcassonne]);

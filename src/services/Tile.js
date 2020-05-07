@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { RoundedRectShape } from "./ThreeComponents";
 
 export class Tile {
-    constructor(image, cardId) {
+    constructor(image, cardId, position = null, rotation = null) {
         this.cardId = cardId;
         var img = new THREE.MeshLambertMaterial({
             side: THREE.DoubleSide,
@@ -34,6 +34,16 @@ export class Tile {
                 if (n.material.map) n.material.map.anisotropy = 16;
             }
         });
+
+        if (position) {
+            this.x = position.x;
+            this.y = position.y;
+            this.z = position.z;
+        }
+
+        if (rotation) {
+            this.mesh.rotation.z = (rotation * Math.PI) / 180;
+        }
     }
 
     get x() {

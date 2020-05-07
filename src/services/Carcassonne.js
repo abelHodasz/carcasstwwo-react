@@ -46,6 +46,11 @@ export default class Carcassonne {
         this.three.scene.add(tile.mesh);
     }
 
+    createAndAddTile(img, cardId, position, rotation) {
+        const tile = new Tile(img, cardId, position, rotation);
+        this.addTile(tile);
+    }
+
     placeTile() {
         const [tile, three] = [this.currentTile, this.three];
 
