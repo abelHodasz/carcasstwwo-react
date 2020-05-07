@@ -29,11 +29,9 @@ export default class Carcassonne {
         return this._players;
     }
 
-    newTile(id, possibleSlots) {
+    newTile(id, possibleSlots, cardId) {
         const img = getCardImage(id);
-        const tile = new PlacableTile(img, possibleSlots, id);
-        console.log("Settings current Tile: ", tile);
-        console.log(this);
+        const tile = new PlacableTile(img, possibleSlots, id, cardId);
         this.currentTile = tile;
         tile.y = 1;
         tile.x = this.three.camera.position.x;

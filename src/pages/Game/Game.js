@@ -30,7 +30,7 @@ export default function Game(props) {
                         rotations: position.rotations,
                     });
                 }
-                carcassonne.newTile(card.tileId, possibleSlots);
+                carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
                 const players = [
                     { name: "Ábel", id: 1 },
                     { name: "Iza", id: 1 },
@@ -39,13 +39,13 @@ export default function Game(props) {
                 carcassonne.players = players;
                 carcassonne.placeTile().then(() => {
                     const card = {
+                        CardId: carcassonne.currentTile.cardId,
+                        Rotation: carcassonne.currentTile.currentSlot.currentRotation.toString(),
                         Coordinate: {
                             x: carcassonne.currentTile.x,
                             y: -carcassonne.currentTile.z,
                         },
-                        CardId: carcassonne.currentTile.cardId,
-                        Rotation:
-                            carcassonne.currentTile.currentSlot.currentRotation,
+                        TileId: carcassonne.currentTile.tileId,
                     };
                     hubConnection.invoke("EndTurn", code, card);
                 });
@@ -57,14 +57,19 @@ export default function Game(props) {
             });
 
             hubConnection.on("RefreshBoard", (card) => {
-                const img = getCardImage(card.cardId);
-                console.log(card);
+                const img = getCardImage(card.tileId);
+
                 const position = new Vector3(
                     card.coordinate.x,
                     0,
                     -card.coordinate.y
                 );
-                carcassonne.createAndAddTile(img, card.cardId, position);
+                carcassonne.createAndAddTile(
+                    img,
+                    card.cardId,
+                    position,
+                    parseInt(card.rotation)
+                );
             });
         }
     }, [code, hubConnection, carcassonne]);
