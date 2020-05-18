@@ -137,7 +137,7 @@ export default class Carcassonne {
                 tile.mesh.rotation.set(
                     -0.5 * Math.PI,
                     0,
-                    toRadians(this.currentSlot.currentRotation)
+                    toRadians(tile.currentSlot.currentRotation)
                 );
             };
 
