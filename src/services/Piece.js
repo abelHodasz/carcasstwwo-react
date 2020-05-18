@@ -7,6 +7,7 @@ export default class Piece {
         var loader = new GLTFLoader();
         this.material = new MeshLambertMaterial({ color });
         this.model = null;
+        this.loaded = false;
         const loadMethod = (result) => {
             var model = result.scene.children[2];
             this.model = model;
@@ -24,8 +25,8 @@ export default class Piece {
             });
             this.center = center;
             scene.add(model);
+            this.loaded = true;
         };
-
         loader.load(piece, loadMethod);
     }
 
@@ -60,6 +61,9 @@ export default class Piece {
     }
 
     setPosition(newPosition) {
+        if (!this.loaded) {
+            return;
+        }
         this.model.position.copy(newPosition);
         this.model.position.sub(this.center);
     }
