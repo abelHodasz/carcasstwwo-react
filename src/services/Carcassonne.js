@@ -68,7 +68,11 @@ export default class Carcassonne {
 
             const mouseup = (e) => {
                 //if end turn button is clicked,resolve
-                if (e.target.classList.contains("end-turn")) {
+                if (
+                    e.target.classList.contains("end-turn") ||
+                    e.target.parentNode.classList.contains("end-turn")
+                ) {
+                    console.log("End turn");
                     resolve(-1);
                 }
 
