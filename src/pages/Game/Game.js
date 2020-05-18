@@ -27,14 +27,31 @@ export default function Game(props) {
 
         //Mock object
         const players = [
-            { name: "Ábel", id: 1 },
-            { name: "Iza", id: 1 },
-            { name: "Máté", id: 1 },
+            { name: "Ábel", id: 1, me: true, color: "#00ff00", meepleCount: 5 },
+            { name: "Iza", id: 1, me: false, color: "#ff0000", meepleCount: 2 },
+            {
+                name: "Máté",
+                id: 1,
+                me: false,
+                color: "00#00ff",
+                meepleCount: 6,
+            },
         ];
         carcassonne.players = players;
 
-        //Place the tile then place
+        //Place the tile
         await carcassonne.placeTile();
+
+        const me = players.filter((p) => p.me)[0];
+        //if there are meeples
+        console.log(me);
+        if (me.meepleCount > 0) {
+            const color = me.color;
+            //Display meeple if there's one available
+            carcassonne.newMeeple(color);
+            //Place the meeple
+            await carcassonne.placeMeeple();
+        }
 
         //Send placement info to backend
         const tile = carcassonne.currentTile;
@@ -48,6 +65,7 @@ export default function Game(props) {
             },
             TileId: tile.tileId,
         };
+        //invoke end turn function on backend
         hubConnection.invoke("EndTurn", code, placedCard);
     };
 
@@ -64,7 +82,7 @@ export default function Game(props) {
         );
     };
 
-    //Catch backend events
+    //Catch backend events ( game logic )
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
             hubConnection.on("Turn", (card) => {
@@ -100,6 +118,7 @@ export default function Game(props) {
     );
 }
 
+//create an object from backend position data
 function createPossibleSlotsObject(coords) {
     const possibleSlots = [];
     for (const position of coords) {
