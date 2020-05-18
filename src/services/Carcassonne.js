@@ -3,7 +3,7 @@ import tile1 from "../images/20_4.png";
 import { Tile, PlacableTile } from "./Tile";
 import Board from "./Board";
 import Player from "./Player";
-import { getMousePosition } from "./UtilService";
+import { getMousePosition, toRadians } from "./UtilService";
 import { getCardImage } from "../Constants/Constants";
 
 export default class Carcassonne {
@@ -53,17 +53,21 @@ export default class Carcassonne {
 
         return new Promise((resolve) => {
             const mousemove = (e) => {
+                //project mouse position to plane
                 const mousePosition = getMousePosition(
                     three.camera,
                     three.mouse
                 );
                 tile.mesh.position.copy(mousePosition);
+                //elevate tile, when not snapping to slot
                 tile.y = 0.5;
                 tile.isInPlace = false;
                 for (const slot of tile.possibleSlots) {
+                    //distance to each possible slot
                     const distanceToSlot = tile.mesh.position.distanceTo(
                         slot.position
                     );
+                    //if close to a spot, snap to it
                     if (distanceToSlot < 0.5) {
                         tile.mesh.position.set(
                             slot.position.x,
@@ -73,7 +77,7 @@ export default class Carcassonne {
                         tile.mesh.rotation.set(
                             -0.5 * Math.PI,
                             0,
-                            (slot.currentRotation * Math.PI) / 180
+                            toRadians(slot.currentRotation)
                         );
                         tile.currentSlot = slot;
                         tile.isInPlace = true;
@@ -82,18 +86,21 @@ export default class Carcassonne {
             };
 
             const keypress = (e) => {
+                //rotate when pressing R
                 if (e.key === "r" || e.key === "R") {
                     tile.currentSlot.rotate();
                 }
                 tile.mesh.rotation.set(
                     -0.5 * Math.PI,
                     0,
-                    (tile.currentSlot.currentRotation * Math.PI) / 180
+                    toRadians(this.currentSlot.currentRotation)
                 );
             };
 
             const mouseup = (e) => {
-                if (tile.isInPlace && e.button === 0) {
+                //if tile is placed, remove event listeners and resolve Promise
+                const LEFT_MOUSE_BUTTON = 0;
+                if (tile.isInPlace && e.button === LEFT_MOUSE_BUTTON) {
                     this.tiles.push(tile);
                     document.removeEventListener("mousemove", mousemove);
                     document.removeEventListener("keypress", keypress);
