@@ -1,6 +1,7 @@
 import ThreeService from "./ThreeService";
 import tile1 from "../images/20_4.png";
 import { Tile, PlacableTile } from "./Tile";
+import Piece from "./Piece";
 import Board from "./Board";
 import Player from "./Player";
 import { getMousePosition, toRadians } from "./UtilService";
@@ -13,7 +14,8 @@ export default class Carcassonne {
         this.tiles = [];
         this.addTile(startingTile);
         this.board = new Board(50, 50, 0.1);
-        //this.piece = new Piece(this.three.scene);
+        this.meeple = null;
+        this.meeples = [];
         this.three.scene.add(this.board.mesh);
         this._players = [];
     }
@@ -38,6 +40,10 @@ export default class Carcassonne {
         this.three.scene.add(tile.mesh);
     }
 
+    newMeeple(color) {
+        this.meeple = new Piece(this.three.scene, color);
+    }
+
     addTile(tile) {
         this.tiles.push(tile);
         this.three.scene.add(tile.mesh);
@@ -46,6 +52,40 @@ export default class Carcassonne {
     createAndAddTile(img, cardId, position, rotation) {
         const tile = new Tile(img, cardId, position, rotation);
         this.addTile(tile);
+    }
+
+    placeMeeple(positions) {
+        const [meeple, three] = [this.meeple, this.three];
+
+        return new Promise((resolve) => {
+            const mousemove = () => {
+                const mousePosition = getMousePosition(
+                    three.camera,
+                    three.mouse
+                );
+                meeple.setPosition(mousePosition);
+            };
+
+            const mouseup = (e) => {
+                //if end turn button is clicked,resolve
+                if (e.target.classList.contains("end-turn")) {
+                    resolve(-1);
+                }
+
+                //if meeple is placed, remove event listeners and resolve Promise
+                const LEFT_MOUSE_BUTTON = 0;
+                if (meeple.isInPlace && e.button === LEFT_MOUSE_BUTTON) {
+                    this.meeples.push(meeple);
+                    document.removeEventListener("mousemove", mousemove);
+                    document.removeEventListener("mouseup", mouseup);
+                    meeple.y = 0;
+                    resolve();
+                }
+            };
+
+            document.addEventListener("mousemove", mousemove);
+            document.addEventListener("mouseup", mouseup);
+        });
     }
 
     placeTile() {
