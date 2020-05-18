@@ -11,69 +11,76 @@ import { getCardImage } from "../../Constants/Constants";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
-    const [hubConnection, setHubConnection] = useContext(HubConnectionContext);
-    const [myTurn, setMyTurn] = useState(false);
+    const hubConnection = useContext(HubConnectionContext)[0];
     const [carcassonne, setCarcassone] = useState(null);
     const { code } = useParams();
 
+    //
+    const myTurn = async (card) => {
+        //Possible placement slots
+        const possibleSlots = createPossibleSlotsObject(
+            card.coordinatesWithRotations
+        );
+
+        //Display the new tile
+        carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
+
+        //Mock object
+        const players = [
+            { name: "Ábel", id: 1 },
+            { name: "Iza", id: 1 },
+            { name: "Máté", id: 1 },
+        ];
+        carcassonne.players = players;
+
+        //Place the tile then place
+        await carcassonne.placeTile();
+
+        //Send placement info to backend
+        const tile = carcassonne.currentTile;
+        const rotation = tile.currentSlot.currentRotation;
+        const placedCard = {
+            CardId: tile.cardId,
+            Rotation: rotation.toString(),
+            Coordinate: {
+                x: tile.x,
+                y: -tile.z,
+            },
+            TileId: tile.tileId,
+        };
+        hubConnection.invoke("EndTurn", code, placedCard);
+    };
+
+    //Display what other players placed
+    const refreshBoard = (card) => {
+        const img = getCardImage(card.tileId);
+
+        const position = new Vector3(card.coordinate.x, 0, -card.coordinate.y);
+        carcassonne.createAndAddTile(
+            img,
+            card.cardId,
+            position,
+            parseInt(card.rotation)
+        );
+    };
+
+    //Catch backend events
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
-            hubConnection.on("Turn", (card, turn) => {
-                const possibleSlots = [];
-                for (const position of card.coordinatesWithRotations) {
-                    possibleSlots.push({
-                        position: new Vector3(
-                            position.coordinate.x,
-                            0.5,
-                            -position.coordinate.y
-                        ),
-                        rotations: position.rotations,
-                    });
-                }
-                carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
-                const players = [
-                    { name: "Ábel", id: 1 },
-                    { name: "Iza", id: 1 },
-                    { name: "Máté", id: 1 },
-                ];
-                carcassonne.players = players;
-                carcassonne.placeTile().then(() => {
-                    const card = {
-                        CardId: carcassonne.currentTile.cardId,
-                        Rotation: carcassonne.currentTile.currentSlot.currentRotation.toString(),
-                        Coordinate: {
-                            x: carcassonne.currentTile.x,
-                            y: -carcassonne.currentTile.z,
-                        },
-                        TileId: carcassonne.currentTile.tileId,
-                    };
-                    hubConnection.invoke("EndTurn", code, card);
-                });
-                setMyTurn(turn);
-            });
-
-            hubConnection.on("EndTurn", (message, turn) => {
-                setMyTurn(turn);
+            hubConnection.on("Turn", (card) => {
+                myTurn(card);
             });
 
             hubConnection.on("RefreshBoard", (card) => {
-                const img = getCardImage(card.tileId);
-
-                const position = new Vector3(
-                    card.coordinate.x,
-                    0,
-                    -card.coordinate.y
-                );
-                carcassonne.createAndAddTile(
-                    img,
-                    card.cardId,
-                    position,
-                    parseInt(card.rotation)
-                );
+                refreshBoard(card);
             });
         }
+
+        // used functions are not dependencies -> disable warnings
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [code, hubConnection, carcassonne]);
 
+    //Initialize three js, create Carcassone object
     useEffect(() => {
         if (mount != null) {
             const carcassonne = new Carcassonne(mount);
@@ -91,4 +98,19 @@ export default function Game(props) {
             </div>
         </Fragment>
     );
+}
+
+function createPossibleSlotsObject(coords) {
+    const possibleSlots = [];
+    for (const position of coords) {
+        possibleSlots.push({
+            position: new Vector3(
+                position.coordinate.x,
+                0.5,
+                -position.coordinate.y
+            ),
+            rotations: position.rotations,
+        });
+    }
+    return possibleSlots;
 }

@@ -16,7 +16,6 @@ import {
 } from "three";
 //import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { findAllByDisplayValue } from "@testing-library/react";
 
 const CAMERA_FOV = 60;
 const ASPECT_RATIO = window.innerWidth / window.innerHeight;
@@ -63,30 +62,17 @@ export default class ThreeService {
     }
 
     init() {
-        const [
-            scene,
-            gui,
-            camera,
-            grid,
-            renderer,
-            axesHelper,
-            hemLight,
-            spotLight,
-            spotLightHelper,
-            controls,
-            cameraHelper,
-        ] = [
+        const [scene, camera, grid, renderer, hemLight, spotLight, controls] = [
             this.scene,
-            this.gui,
+
             this.camera,
             this.grid,
             this.renderer,
-            this.axesHelper,
+
             this.hemLight,
             this.spotLight,
-            this.spotLightHelper,
+
             this.controls,
-            this.cameraHelper,
         ];
         //scene settings
         scene.traverse((child) => {
@@ -95,8 +81,6 @@ export default class ThreeService {
                 child.receiveShadow = true;
             }
         });
-
-        //gui settings
 
         //camera settings
         camera.position.set(0.5, 5, 0.5);
@@ -112,14 +96,9 @@ export default class ThreeService {
         renderer.toneMappingExposure = 1;
         renderer.toneMapping = ReinhardToneMapping;
         renderer.setSize(window.innerWidth, window.innerHeight);
-        //axesHelper settings
-        //scene.add(axesHelper);
 
         //hemisphere Light setings
         scene.add(hemLight);
-
-        //spotlight Helper settings
-        //scene.add(spotLightHelper);
 
         //spotlight settings
         spotLight.castShadow = true;
@@ -145,9 +124,6 @@ export default class ThreeService {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
         });
-
-        //cameraHelper settings
-        //scene.add(cameraHelper);
 
         //raycaster, mouse
         document.addEventListener("mousemove", (e) => {

@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import "./Lobby.css";
 import { Button } from "@material-ui/core";
 
 export default function Lobby(props) {
     const { code } = useParams();
-
-    const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-    const [hubConnection, setHubConnection] = useContext(HubConnectionContext);
+    const hubConnection = useContext(HubConnectionContext)[0];
 
     const [users, setUsers] = useState([]);
     const usersJsX = (

@@ -1,8 +1,7 @@
 import ThreeService from "./ThreeService";
 import tile1 from "../images/20_4.png";
-import { Tile, PlacableTile, Slot } from "./Tile";
+import { Tile, PlacableTile } from "./Tile";
 import Board from "./Board";
-import Piece from "./Piece";
 import Player from "./Player";
 import { getMousePosition } from "./UtilService";
 import { getCardImage } from "../Constants/Constants";
@@ -94,7 +93,6 @@ export default class Carcassonne {
             };
 
             const mouseup = (e) => {
-                e.preventDefault();
                 if (tile.isInPlace && e.button === 0) {
                     this.tiles.push(tile);
                     document.removeEventListener("mousemove", mousemove);

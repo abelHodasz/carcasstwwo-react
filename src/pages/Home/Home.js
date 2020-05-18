@@ -22,7 +22,7 @@ export default function Home(props) {
             hubConnection
                 .start()
                 .then(() => {
-                    console.log("Conntection started!");
+                    console.log("Connection started!");
                 })
                 .catch((e) => console.log(e));
     }, [hubConnection]);
