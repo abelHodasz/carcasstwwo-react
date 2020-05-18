@@ -1,4 +1,10 @@
 .game {
   position: absolute;
 }
+
+.end-turn-container {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+}
 /*# sourceMappingURL=Game.css.map */

@@ -8,12 +8,14 @@ import InfoBox from "../../components/InfoBox/InfoBox";
 
 import Carcassonne from "../../services/Carcassonne";
 import { getCardImage } from "../../Constants/Constants";
+import { Button } from "@material-ui/core";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
     const hubConnection = useContext(HubConnectionContext)[0];
     const [carcassonne, setCarcassone] = useState(null);
     const { code } = useParams();
+    const [showEndTurn, setShowEndTurn] = useState(false);
 
     //
     const myTurn = async (card) => {
@@ -44,13 +46,15 @@ export default function Game(props) {
 
         const me = players.filter((p) => p.me)[0];
         //if there are meeples
-        console.log(me);
         if (me.meepleCount > 0) {
+            setShowEndTurn(true);
             const color = me.color;
             //Display meeple if there's one available
             carcassonne.newMeeple(color);
+
             //Place the meeple
             await carcassonne.placeMeeple();
+            setShowEndTurn(false);
         }
 
         //Send placement info to backend
@@ -111,6 +115,13 @@ export default function Game(props) {
     return (
         <Fragment>
             <InfoBox />
+            {showEndTurn && (
+                <div className="end-turn-container">
+                    <Button className="end-turn" variant="outlined">
+                        End turn
+                    </Button>
+                </div>
+            )}
             <div ref={(ref) => setMount(ref)}>
                 <div className="game"></div>
             </div>
