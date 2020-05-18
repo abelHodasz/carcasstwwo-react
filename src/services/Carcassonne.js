@@ -49,6 +49,10 @@ export default class Carcassonne {
         this.three.scene.add(tile.mesh);
     }
 
+    removeFromScene(item) {
+        this.three.scene.remove(item);
+    }
+
     createAndAddTile(img, cardId, position, rotation) {
         const tile = new Tile(img, cardId, position, rotation);
         this.addTile(tile);
@@ -67,18 +71,20 @@ export default class Carcassonne {
             };
 
             const mouseup = (e) => {
+                const LEFT_MOUSE_BUTTON = 0;
                 //if end turn button is clicked,resolve
                 if (
                     e.target.classList.contains("end-turn") ||
                     e.target.parentNode.classList.contains("end-turn")
                 ) {
+                    document.removeEventListener("mousemove", mousemove);
+                    document.removeEventListener("mouseup", mouseup);
+                    this.removeFromScene(this.meeple.model);
                     console.log("End turn");
                     resolve(-1);
                 }
-
                 //if meeple is placed, remove event listeners and resolve Promise
-                const LEFT_MOUSE_BUTTON = 0;
-                if (meeple.isInPlace && e.button === LEFT_MOUSE_BUTTON) {
+                else if (meeple.isInPlace && e.button === LEFT_MOUSE_BUTTON) {
                     this.meeples.push(meeple);
                     document.removeEventListener("mousemove", mousemove);
                     document.removeEventListener("mouseup", mouseup);
