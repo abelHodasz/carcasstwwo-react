@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, Fragment } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import "./Game.css";
 import { Vector3 } from "three";
@@ -9,6 +9,7 @@ import InfoBox from "../../components/InfoBox/InfoBox";
 import Carcassonne from "../../services/Carcassonne";
 import { getCardImage } from "../../Constants/Constants";
 import { Button } from "@material-ui/core";
+import CONSTANTS from "../../Constants/Constants"
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
@@ -17,17 +18,16 @@ export default function Game(props) {
     const { code } = useParams();
     const [showEndTurn, setShowEndTurn] = useState(false);
 
-    //
     const myTurn = async (card) => {
-        //Possible placement slots
+        // possible placement slots
         const possibleSlots = createPossibleSlotsObject(
             card.coordinatesWithRotations
         );
 
-        //Display the new tile
+        // display the new tile
         carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
 
-        //Mock object
+        // mock object
         const players = [
             { name: "Ábel", id: 1, me: true, color: "#00ff00", meepleCount: 5 },
             { name: "Iza", id: 1, me: false, color: "#ff0000", meepleCount: 2 },
@@ -39,41 +39,47 @@ export default function Game(props) {
                 meepleCount: 6,
             },
         ];
+        //TODO: dont reassign new players every time
         carcassonne.players = players;
 
-        //Place the tile
+        // place the tile
         await carcassonne.placeTile();
 
-        const me = players.filter((p) => p.me)[0];
-        //if there are meeples
-        if (me.meepleCount > 0) {
-            setShowEndTurn(true);
-            const color = me.color;
-            //Display meeple if there's one available
-            carcassonne.newMeeple(color);
-
-            //Place the meeple
-            await carcassonne.placeMeeple();
-            setShowEndTurn(false);
-        }
-
-        //Send placement info to backend
-        const tile = carcassonne.currentTile;
-        const rotation = tile.currentSlot.currentRotation;
-        const placedCard = {
-            CardId: tile.cardId,
-            Rotation: rotation.toString(),
-            Coordinate: {
-                x: tile.x,
-                y: -tile.z,
-            },
-            TileId: tile.tileId,
-        };
-        //invoke end turn function on backend
-        hubConnection.invoke("EndTurn", code, placedCard);
+        // send placement info to backend
+        const placedCard = carcassonne.getCurrentCard()
+        // invoke end placement function on backend
+        hubConnection.invoke("EndPlacement", code, placedCard);
     };
 
-    //Display what other players placed
+    // place meeple if there are available
+    const placeMeeple = async (positions) => {
+        // default value of position if no meeple is placed
+        let position = -1;
+
+        if (positions !== null) {
+            const me = carcassonne.players.filter((p) => p.me)[0];
+            console.log(me);
+            // if there are meeples
+            if (me.meepleCount > 0) {
+                // show button to end turn
+                setShowEndTurn(true);
+                // display meeple if there's one available
+                carcassonne.newMeeple(me.color);
+                // place the meeple
+                position = await carcassonne.placeMeeple(positions);
+
+                // hide button to end turn
+                setShowEndTurn(false);
+            }
+        }
+
+
+        const placedCard = carcassonne.getCurrentCard()
+        // invoke end turn function on backend
+        hubConnection.invoke("EndTurn",code, position, placedCard);
+    };
+
+    // display what other players placed
     const refreshBoard = (card) => {
         const img = getCardImage(card.tileId);
 
@@ -86,11 +92,15 @@ export default function Game(props) {
         );
     };
 
-    //Catch backend events ( game logic )
+    // catch backend events ( game logic )
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
             hubConnection.on("Turn", (card) => {
                 myTurn(card);
+            });
+
+            hubConnection.on("PlaceMeeple", (positions) => {
+                placeMeeple(positions);
             });
 
             hubConnection.on("RefreshBoard", (card) => {
@@ -102,7 +112,7 @@ export default function Game(props) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [code, hubConnection, carcassonne]);
 
-    //Initialize three js, create Carcassone object
+    // initialize three js, create Carcassone object
     useEffect(() => {
         if (mount != null) {
             const carcassonne = new Carcassonne(mount);
@@ -113,7 +123,7 @@ export default function Game(props) {
     }, [mount]);
 
     return (
-        <Fragment>
+        <>
             <InfoBox />
             {showEndTurn && (
                 <div className="end-turn-container">
@@ -125,18 +135,18 @@ export default function Game(props) {
             <div ref={(ref) => setMount(ref)}>
                 <div className="game"></div>
             </div>
-        </Fragment>
+        </>
     );
 }
 
-//create an object from backend position data
+// create an object from backend position data
 function createPossibleSlotsObject(coords) {
     const possibleSlots = [];
     for (const position of coords) {
         possibleSlots.push({
             position: new Vector3(
                 position.coordinate.x,
-                0.5,
+                CONSTANTS.HOVER_HEIGHT,
                 -position.coordinate.y
             ),
             rotations: position.rotations,

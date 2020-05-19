@@ -1,13 +1,10 @@
-import { getColors } from "./Color";
-
-const colors = getColors();
-
 export default class Player {
-    constructor(name, id) {
+    constructor({name, id, me, color, meepleCount}) {
         this.score = 0;
         this.name = name;
+        this.me = me;
         this.id = id;
-        this.meeples = 7;
-        this.color = colors.next().value;
+        this.meepleCount = meepleCount;
+        this.color = color;
     }
 }

@@ -8,6 +8,7 @@ export default class Piece {
         this.material = new MeshLambertMaterial({ color });
         this.model = null;
         this.loaded = false;
+        this.isInPlace = false;
         const loadMethod = (result) => {
             var model = result.scene.children[2];
             this.model = model;
