@@ -6,9 +6,8 @@ import Board from "./Board";
 import Player from "./Player";
 import { getMousePosition, toRadians } from "./UtilService";
 import { getCardImage } from "../Constants/Constants";
-import CONSTANTS from "../Constants/Constants"
-import { Vector2, Vector3 } from "three"
-
+import CONSTANTS from "../Constants/Constants";
+import { Vector2, Vector3 } from "three";
 
 const BOARD_SIZE = 50;
 
@@ -23,20 +22,18 @@ export default class Carcassonne {
         this.meeples = [];
         this.three.scene.add(this.board.mesh);
         this._players = [];
+        this.meeplePosition = -1;
     }
 
     set players(value) {
-        this._players = value.map(
-            (player) => new Player(player)
-        );
+        this._players = value.map((player) => new Player(player));
     }
 
     get players() {
         return this._players;
     }
 
-
-    getCurrentCard(){
+    getCurrentCard() {
         const tile = this.currentTile;
         const rotation = tile.currentSlot.currentRotation;
         const placedCard = {
@@ -80,8 +77,7 @@ export default class Carcassonne {
         this.addTile(tile);
     }
 
-
-    getMeeplePositions(x, y, positions){
+    getMeeplePositions(x, y, positions) {
         const d = CONSTANTS.MEEPLE_OFFSET;
         /*
             1  2  3
@@ -92,56 +88,92 @@ export default class Carcassonne {
             [x-d, y  ] [x, y  ] [x+d, y  ]
             [x-d, y+d] [x, y+d] [x+d, y+d] 
         */
-        const meeplePositions = []
-        for(const position of positions){
-            switch(position){
+        const meeplePositions = [];
+        for (const position of positions) {
+            switch (position) {
                 case 1:
-                    meeplePositions.push(new Vector2(x-d, y-d))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x - d, y - d),
+                    });
                     break;
                 case 2:
-                    meeplePositions.push(new Vector2(x, y-d))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x, y - d),
+                    });
                     break;
                 case 3:
-                    meeplePositions.push(new Vector2(x+d, y-d))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x + d, y - d),
+                    });
                     break;
                 case 4:
-                    meeplePositions.push(new Vector2(x-d, y  ))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x - d, y),
+                    });
                     break;
                 case 5:
-                    meeplePositions.push(new Vector2(x, y  ))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x, y),
+                    });
                     break;
                 case 6:
-                    meeplePositions.push(new Vector2(x+d, y  ))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x + d, y),
+                    });
                     break;
                 case 7:
-                    meeplePositions.push(new Vector2(x-d, y+d))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x - d, y + d),
+                    });
                     break;
                 case 8:
-                    meeplePositions.push(new Vector2(x, y+d))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x, y + d),
+                    });
                     break;
                 case 9:
-                    meeplePositions.push(new Vector2(x+d, y+d))
+                    meeplePositions.push({
+                        number: position,
+                        coord: new Vector2(x + d, y + d),
+                    });
                     break;
-                    default:
-                        throw new Error("Invalid position");
+                default:
+                    throw new Error("Invalid position");
             }
         }
-        return meeplePositions
+        return meeplePositions;
     }
 
-    showMeeplePositions(meeplePositions){
-        console.log(meeplePositions)
+    showMeeplePositions(meeplePositions) {
+
+        // TODO: show indicator on possible meeplePositions
     }
 
     placeMeeple(positions) {
-        const [meeple, three, tile] = [this.meeple, this.three, this.currentTile];
-        const meeplePositions = this.getMeeplePositions(tile.x, tile.z, positions);
+        const [meeple, three, tile] = [
+            this.meeple,
+            this.three,
+            this.currentTile,
+        ];
+        const meeplePositions = this.getMeeplePositions(
+            tile.x,
+            tile.z,
+            positions
+        );
 
         this.showMeeplePositions(meeplePositions);
 
         return new Promise((resolve) => {
             const mousemove = () => {
-                if (!meeple.loaded)return;
+                if (!meeple.loaded) return;
                 const mousePosition = getMousePosition(
                     three.camera,
                     three.mouse
@@ -152,22 +184,29 @@ export default class Carcassonne {
                 meeple.isInPlace = false;
 
                 for (const pos of meeplePositions) {
-                    const distanceToMeeple = meeple.model.position.distanceTo(new Vector3(pos.x, CONSTANTS.HOVER_HEIGHT,pos.y))
+                    const distanceToMeeple = meeple.model.position.distanceTo(
+                        new Vector3(
+                            pos.coord.x,
+                            CONSTANTS.HOVER_HEIGHT,
+                            pos.coord.y
+                        )
+                    );
                     if (distanceToMeeple < CONSTANTS.MEEPLE_SNAP_DISTANCE) {
-                        console.log("meeple snap")
-                        const newPosition = new Vector3(pos.x,
+                        const newPosition = new Vector3(
+                            pos.coord.x,
                             CONSTANTS.SNAP_HEIGHT,
-                            pos.y)
-                            meeple.setPosition(newPosition)
+                            pos.coord.y
+                        );
+                        meeple.setPosition(newPosition);
+                        this.meeplePosition = pos.number;
                         meeple.isInPlace = true;
                     }
                 }
-
             };
 
             const mouseup = (e) => {
                 const LEFT_MOUSE_BUTTON = 0;
-                //if end turn button is clicked,resolve
+                // if end turn button is clicked,resolve
                 if (
                     e.target.classList.contains("end-turn") ||
                     e.target.parentNode.classList.contains("end-turn")
@@ -175,6 +214,7 @@ export default class Carcassonne {
                     document.removeEventListener("mousemove", mousemove);
                     document.removeEventListener("mouseup", mouseup);
                     this.removeFromScene(this.meeple.model);
+                    this.meeple = null;
                     resolve(-1);
                 }
                 //if meeple is placed, remove event listeners and resolve Promise
@@ -183,7 +223,7 @@ export default class Carcassonne {
                     document.removeEventListener("mousemove", mousemove);
                     document.removeEventListener("mouseup", mouseup);
                     meeple.y = 0;
-                    resolve(1);
+                    resolve(this.meeplePosition);
                 }
             };
 

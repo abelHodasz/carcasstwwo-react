@@ -9,7 +9,7 @@ import InfoBox from "../../components/InfoBox/InfoBox";
 import Carcassonne from "../../services/Carcassonne";
 import { getCardImage } from "../../Constants/Constants";
 import { Button } from "@material-ui/core";
-import CONSTANTS from "../../Constants/Constants"
+import CONSTANTS from "../../Constants/Constants";
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
@@ -46,7 +46,7 @@ export default function Game(props) {
         await carcassonne.placeTile();
 
         // send placement info to backend
-        const placedCard = carcassonne.getCurrentCard()
+        const placedCard = carcassonne.getCurrentCard();
         // invoke end placement function on backend
         hubConnection.invoke("EndPlacement", code, placedCard);
     };
@@ -58,7 +58,6 @@ export default function Game(props) {
 
         if (positions !== null) {
             const me = carcassonne.players.filter((p) => p.me)[0];
-            console.log(me);
             // if there are meeples
             if (me.meepleCount > 0) {
                 // show button to end turn
@@ -73,10 +72,10 @@ export default function Game(props) {
             }
         }
 
-
-        const placedCard = carcassonne.getCurrentCard()
+        console.log(position);
+        const placedCard = carcassonne.getCurrentCard();
         // invoke end turn function on backend
-        hubConnection.invoke("EndTurn",code, position, placedCard);
+        hubConnection.invoke("EndTurn", code, position, placedCard);
     };
 
     // display what other players placed
@@ -92,6 +91,9 @@ export default function Game(props) {
         );
     };
 
+    // add scores
+    const addScores = (scores) => {};
+
     // catch backend events ( game logic )
     useEffect(() => {
         if (hubConnection != null && carcassonne != null) {
@@ -105,6 +107,10 @@ export default function Game(props) {
 
             hubConnection.on("RefreshBoard", (card) => {
                 refreshBoard(card);
+            });
+
+            hubConnection.on("AddScores", (scores) => {
+                addScores(scores);
             });
         }
 
