@@ -53,3 +53,13 @@ const images = {
 export function getCardImage(id) {
     return images[id];
 }
+
+const constants = {
+    HOVER_HEIGHT : 0.3,
+    SNAP_HEIGHT : 0.1,
+    TILE_SNAP_DISTANCE: 0.5,
+    MEEPLE_OFFSET: 0.35,
+    MEEPLE_SNAP_DISTANCE: 0.2
+};
+
+export default constants;
