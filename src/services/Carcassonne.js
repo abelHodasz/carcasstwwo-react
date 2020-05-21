@@ -4,6 +4,7 @@ import { Tile, PlacableTile } from "./Tile";
 import Piece from "./Piece";
 import Board from "./Board";
 import Player from "./Player";
+import DottedCircle from "./DottedCircle";
 import { getMousePosition, toRadians } from "./UtilService";
 import { getCardImage } from "../Constants/Constants";
 import CONSTANTS from "../Constants/Constants";
@@ -23,6 +24,7 @@ export default class Carcassonne {
         this.three.scene.add(this.board.mesh);
         this._players = [];
         this.meeplePosition = -1;
+        this.meepleIndicators = [];
     }
 
     set players(value) {
@@ -77,8 +79,8 @@ export default class Carcassonne {
         this.addTile(tile);
     }
 
-    getMeeplePositions(x, y, positions) {
-        const d = CONSTANTS.MEEPLE_OFFSET;
+    getMeeplePositions(x, y, positions, options = {}) {
+        const d = options["meepleOffset"] || CONSTANTS.MEEPLE_OFFSET;
         /*
             1  2  3
             4  5  6
@@ -86,7 +88,7 @@ export default class Carcassonne {
             becomes
             [x-d, y-d] [x, y-d] [x+d, y-d]
             [x-d, y  ] [x, y  ] [x+d, y  ]
-            [x-d, y+d] [x, y+d] [x+d, y+d] 
+            [x-d, y+d] [x, y+d] [x+d, y+d]
         */
         const meeplePositions = [];
         for (const position of positions) {
@@ -152,9 +154,24 @@ export default class Carcassonne {
         return meeplePositions;
     }
 
-    showMeeplePositions(meeplePositions) {
+    showMeeplePositions(meeplePositions = []) {
+        for (const pos of meeplePositions) {
+            const [x, y] = [pos.coord.x, pos.coord.y];
+            const indicator = new DottedCircle(
+                0.2,
+                x,
+                CONSTANTS.MEEPLE_INDICATOR_HEIGHT,
+                y,
+                0.2
+            );
+            this.meepleIndicators.push(indicator);
+            this.three.scene.add(indicator.particles);
+        }
+    }
 
-        // TODO: show indicator on possible meeplePositions
+    removeMeeplePositions() {
+        this.meepleIndicators.forEach((i) => this.removeFromScene(i.particles));
+        this.meepleIndicators = [];
     }
 
     placeMeeple(positions) {
@@ -211,6 +228,7 @@ export default class Carcassonne {
                     e.target.classList.contains("end-turn") ||
                     e.target.parentNode.classList.contains("end-turn")
                 ) {
+                    this.removeMeeplePositions();
                     document.removeEventListener("mousemove", mousemove);
                     document.removeEventListener("mouseup", mouseup);
                     this.removeFromScene(this.meeple.model);
@@ -219,6 +237,7 @@ export default class Carcassonne {
                 }
                 //if meeple is placed, remove event listeners and resolve Promise
                 else if (meeple.isInPlace && e.button === LEFT_MOUSE_BUTTON) {
+                    this.removeMeeplePositions();
                     this.meeples.push(meeple);
                     document.removeEventListener("mousemove", mousemove);
                     document.removeEventListener("mouseup", mouseup);
@@ -275,7 +294,7 @@ export default class Carcassonne {
                     tile.currentSlot.rotate();
                 }
                 tile.mesh.rotation.set(
-                    -CONSTANTS.HOVER_HEIGHT * Math.PI,
+                    -0.5 * Math.PI,
                     0,
                     toRadians(tile.currentSlot.currentRotation)
                 );

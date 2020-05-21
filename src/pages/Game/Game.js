@@ -11,6 +11,9 @@ import { getCardImage } from "../../Constants/Constants";
 import { Button } from "@material-ui/core";
 import CONSTANTS from "../../Constants/Constants";
 
+// Coordinates in three are different, that's why everywhere y(height) is constant and z(depth) is -y
+// x(width) remains the same
+
 export default function Game(props) {
     const [mount, setMount] = useState(null);
     const hubConnection = useContext(HubConnectionContext)[0];
@@ -29,8 +32,14 @@ export default function Game(props) {
 
         // mock object
         const players = [
-            { name: "Ábel", id: 1, me: true, color: "#00ff00", meepleCount: 5 },
-            { name: "Iza", id: 1, me: false, color: "#ff0000", meepleCount: 2 },
+            {
+                name: "Ábel",
+                id: 1,
+                me: false,
+                color: "#00ff00",
+                meepleCount: 5,
+            },
+            { name: "Iza", id: 1, me: true, color: "#ff0000", meepleCount: 2 },
             {
                 name: "Máté",
                 id: 1,

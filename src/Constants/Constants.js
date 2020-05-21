@@ -55,11 +55,12 @@ export function getCardImage(id) {
 }
 
 const constants = {
-    HOVER_HEIGHT : 0.3,
-    SNAP_HEIGHT : 0.1,
+    HOVER_HEIGHT: 0.3,
+    SNAP_HEIGHT: 0.1,
     TILE_SNAP_DISTANCE: 0.5,
     MEEPLE_OFFSET: 0.35,
-    MEEPLE_SNAP_DISTANCE: 0.2
+    MEEPLE_SNAP_DISTANCE: 0.2,
+    MEEPLE_INDICATOR_HEIGHT: 0.1,
 };
 
 export default constants;
