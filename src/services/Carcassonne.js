@@ -166,12 +166,17 @@ export default class Carcassonne {
             );
             this.meepleIndicators.push(indicator);
             this.three.scene.add(indicator.particles);
+            this.three.animations.push(() => {
+                indicator.particles.rotation.z -= 0.01;
+            });
         }
     }
 
     removeMeeplePositions() {
         this.meepleIndicators.forEach((i) => this.removeFromScene(i.particles));
         this.meepleIndicators = [];
+
+        this.three.animations.pop();
     }
 
     placeMeeple(positions) {

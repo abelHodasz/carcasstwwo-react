@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import CONSTANTS from "../Constants/Constants";
 
 export default class DottedCircle {
     constructor(radius = 40, x, y, z, s, options = {}) {

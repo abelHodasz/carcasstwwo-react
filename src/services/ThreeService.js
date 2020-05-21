@@ -59,6 +59,7 @@ export default class ThreeService {
         mount.appendChild(this.renderer.domElement);
         this.raycaster = new Raycaster();
         this.mouse = new Vector2(0, 0);
+        this.animations = [];
     }
 
     init() {
@@ -136,6 +137,7 @@ export default class ThreeService {
     animate = () => {
         this.renderer.render(this.scene, this.camera);
         this.raycaster.setFromCamera(this.mouse, this.camera);
+        this.animations.forEach((animate) => animate());
         requestAnimationFrame(this.animate);
     };
 }
