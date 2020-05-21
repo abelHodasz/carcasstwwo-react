@@ -23,7 +23,7 @@ import img_22 from "../images/22_9.png";
 import img_23 from "../images/23_4.png";
 import img_24 from "../images/24_1.png";
 
-const images = {
+export const images = {
     1: img_1,
     2: img_2,
     3: img_3,
@@ -55,6 +55,7 @@ export function getCardImage(id) {
 }
 
 const constants = {
+    STARTING_TILE: 20,
     HOVER_HEIGHT: 0.3,
     SNAP_HEIGHT: 0.1,
     TILE_SNAP_DISTANCE: 0.5,

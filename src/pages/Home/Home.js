@@ -2,12 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import { TextField, Button, Box } from "@material-ui/core";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import { HubConnectionBuilder } from "@aspnet/signalr";
+import Loading from "../../components/Loading/Loading";
+
 import "./Home.css";
 
 export default function Home(props) {
     const [name, setName] = useState("");
     const [hubConnection, setHubConnection] = useContext(HubConnectionContext);
     const [room, setRoom] = useState("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const hubConn = new HubConnectionBuilder()
@@ -22,6 +25,7 @@ export default function Home(props) {
             hubConnection
                 .start()
                 .then(() => {
+                    setLoading(false);
                     console.log("Connection started!");
                 })
                 .catch((e) => console.log(e));
@@ -55,34 +59,48 @@ export default function Home(props) {
 
     return (
         <div className="home">
-            <Box className="row">
-                <TextField
-                    required
-                    className="name-input"
-                    id="standard-basic"
-                    label="Your Name"
-                    onChange={(e) => {
-                        setName(e.target.value);
-                    }}
-                ></TextField>
-                <Button className="create-lobby-btn" onClick={onCreateLobby}>
-                    Create Lobby
-                </Button>
-            </Box>
-            <Box className="row">
-                <TextField
-                    required
-                    className="room-input"
-                    id="standard-basic"
-                    label="Room Code"
-                    onChange={(e) => {
-                        setRoom(e.target.value);
-                    }}
-                ></TextField>
-                <Button className="join-lobby-btn" onClick={onJoinLobby}>
-                    Join Lobby
-                </Button>
-            </Box>
+            {loading ? (
+                <div className=".loading">
+                    <Loading />
+                </div>
+            ) : (
+                <>
+                    <Box className="row">
+                        <TextField
+                            required
+                            className="name-input"
+                            id="standard-basic"
+                            label="Your Name"
+                            onChange={(e) => {
+                                setName(e.target.value);
+                            }}
+                        ></TextField>
+                        <Button
+                            className="create-lobby-btn"
+                            onClick={onCreateLobby}
+                        >
+                            Create Lobby
+                        </Button>
+                    </Box>
+                    <Box className="row">
+                        <TextField
+                            required
+                            className="room-input"
+                            id="standard-basic"
+                            label="Room Code"
+                            onChange={(e) => {
+                                setRoom(e.target.value);
+                            }}
+                        ></TextField>
+                        <Button
+                            className="join-lobby-btn"
+                            onClick={onJoinLobby}
+                        >
+                            Join Lobby
+                        </Button>
+                    </Box>
+                </>
+            )}
         </div>
     );
 }

@@ -3,13 +3,13 @@ import { useParams } from "react-router-dom";
 import "./Game.css";
 import { Vector3 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
-
 import InfoBox from "../../components/InfoBox/InfoBox";
-
 import Carcassonne from "../../services/Carcassonne";
-import { getCardImage } from "../../Constants/Constants";
+import Loading from "../../components/Loading/Loading";
+import { images } from "../../Constants/Constants";
 import { Button } from "@material-ui/core";
 import CONSTANTS from "../../Constants/Constants";
+import ThreeService from "../../services/ThreeService";
 
 // Coordinates in three are different, that's why everywhere y(height) is constant and z(depth) is -y
 // x(width) remains the same
@@ -20,6 +20,7 @@ export default function Game(props) {
     const [carcassonne, setCarcassone] = useState(null);
     const { code } = useParams();
     const [showEndTurn, setShowEndTurn] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const myTurn = async (card) => {
         // possible placement slots
@@ -89,11 +90,8 @@ export default function Game(props) {
 
     // display what other players placed
     const refreshBoard = (card) => {
-        const img = getCardImage(card.tileId);
-
         const position = new Vector3(card.coordinate.x, 0, -card.coordinate.y);
         carcassonne.createAndAddTile(
-            img,
             card.cardId,
             position,
             parseInt(card.rotation)
@@ -125,15 +123,20 @@ export default function Game(props) {
 
         // used functions are not dependencies -> disable warnings
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [code, hubConnection, carcassonne]);
+    }, [hubConnection, carcassonne]);
 
     // initialize three js, create Carcassone object
     useEffect(() => {
         if (mount != null) {
-            const carcassonne = new Carcassonne(mount);
-            carcassonne.three.init();
-            carcassonne.three.animate();
+            const three = new ThreeService(mount);
+            const carcassonne = new Carcassonne(three);
             setCarcassone(carcassonne);
+            three.loadTextures(Object.values(images)).then(() => {
+                setLoading(false);
+                carcassonne.three.init();
+                carcassonne.three.animate();
+            });
+            console.log("images loaded");
         }
     }, [mount]);
 
@@ -145,6 +148,11 @@ export default function Game(props) {
                     <Button className="end-turn" variant="outlined">
                         End turn
                     </Button>
+                </div>
+            )}
+            {loading && (
+                <div className="loading">
+                    <Loading />
                 </div>
             )}
             <div ref={(ref) => setMount(ref)}>

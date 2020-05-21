@@ -13,6 +13,7 @@ import {
     MOUSE,
     Raycaster,
     Vector2,
+    TextureLoader,
 } from "three";
 //import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -60,6 +61,7 @@ export default class ThreeService {
         this.raycaster = new Raycaster();
         this.mouse = new Vector2(0, 0);
         this.animations = [];
+        this.textures = new Map();
     }
 
     init() {
@@ -132,6 +134,29 @@ export default class ThreeService {
             this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
             this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
         });
+    }
+
+    async loadTextures(sources) {
+        const loader = new TextureLoader();
+        console.log("loading images");
+        const promises = sources.map(
+            (src) =>
+                new Promise((resolve) => {
+                    loader.load(src, (texture) => {
+                        this.textures.set(src, texture);
+                        resolve();
+                    });
+                })
+        );
+        return Promise.all(promises);
+    }
+
+    loadTexture(src) {
+        return new TextureLoader().load(src);
+    }
+
+    getTexture(src) {
+        return this.textures.get(src) || this.loadTexture(src);
     }
 
     animate = () => {

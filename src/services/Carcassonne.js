@@ -1,5 +1,3 @@
-import ThreeService from "./ThreeService";
-import tile1 from "../images/20_4.png";
 import { Tile, PlacableTile } from "./Tile";
 import Piece from "./Piece";
 import Board from "./Board";
@@ -13,9 +11,11 @@ import { Vector2, Vector3 } from "three";
 const BOARD_SIZE = 50;
 
 export default class Carcassonne {
-    constructor(mount, players) {
-        this.three = new ThreeService(mount);
-        const startingTile = new Tile(tile1);
+    constructor(three) {
+        this.three = three;
+        const img = getCardImage(CONSTANTS.STARTING_TILE);
+        const texture = this.three.loadTexture(img);
+        const startingTile = new Tile(texture);
         this.tiles = [];
         this.addTile(startingTile);
         this.board = new Board(BOARD_SIZE, BOARD_SIZE, CONSTANTS.SNAP_HEIGHT);
@@ -52,8 +52,9 @@ export default class Carcassonne {
     }
 
     newTile(id, possibleSlots, cardId) {
-        const img = getCardImage(id);
-        const tile = new PlacableTile(img, possibleSlots, id, cardId);
+        const texture = this.three.getTexture(getCardImage(id));
+        console.log(texture);
+        const tile = new PlacableTile(texture, possibleSlots, id, cardId);
         this.currentTile = tile;
         tile.y = 1;
         tile.x = this.three.camera.position.x;
@@ -74,8 +75,9 @@ export default class Carcassonne {
         this.three.scene.remove(item);
     }
 
-    createAndAddTile(img, cardId, position, rotation) {
-        const tile = new Tile(img, cardId, position, rotation);
+    createAndAddTile(cardId, position, rotation) {
+        const texture = this.three.getTexture(getCardImage(cardId));
+        const tile = new Tile(texture, cardId, position, rotation);
         this.addTile(tile);
     }
 
