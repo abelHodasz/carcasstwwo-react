@@ -136,7 +136,7 @@ export default class ThreeService {
         });
     }
 
-    async loadTextures(sources) {
+    async loadTexturesAsync(sources) {
         const loader = new TextureLoader();
         console.log("loading images");
         const promises = sources.map(

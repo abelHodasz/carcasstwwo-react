@@ -131,7 +131,7 @@ export default function Game(props) {
             const three = new ThreeService(mount);
             const carcassonne = new Carcassonne(three);
             setCarcassone(carcassonne);
-            three.loadTextures(Object.values(images)).then(() => {
+            three.loadTexturesAsync(Object.values(images)).then(() => {
                 setLoading(false);
                 carcassonne.three.init();
                 carcassonne.three.animate();
