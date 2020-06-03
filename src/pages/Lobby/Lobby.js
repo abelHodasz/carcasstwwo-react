@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import { useParams } from "react-router-dom";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
-import "./Lobby.css";
-import { Button } from "@material-ui/core";
+import { Typography, Box, Button, Container } from "../../themes/components";
 
 export default function Lobby(props) {
     const { code } = useParams();
@@ -12,7 +11,9 @@ export default function Lobby(props) {
     const usersJsX = (
         <ul>
             {users.map((user) => (
-                <li key={user.connectionId}>{user.name}</li>
+                <li key={user.connectionId}>
+                    <Typography>{user.name}</Typography>
+                </li>
             ))}
         </ul>
     );
@@ -31,27 +32,23 @@ export default function Lobby(props) {
         hubConnection.invoke("StartGame", code);
     };
 
-    if (users.length !== 0) {
-        return (
-            <div className="app">
-                <div className="lobby">
-                    <div>Joined lobby : {code}</div>
+    return (
+        <Box centertext className="app">
+            <Typography variant="h2">Joined lobby : </Typography>
+            <Typography variant="h1">{code}</Typography>
+            {!!users.length && (
+                <Fragment>
                     <div className="users">{usersJsX}</div>
                     <Button
                         className="start-btn"
                         color="primary"
+                        variant="contained"
                         onClick={onStartGame}
                     >
                         Start
                     </Button>
-                </div>
-            </div>
-        );
-    } else {
-        return (
-            <div className="app">
-                <div className="lobby">Joined lobby : {code}</div>
-            </div>
-        );
-    }
+                </Fragment>
+            )}
+        </Box>
+    );
 }
