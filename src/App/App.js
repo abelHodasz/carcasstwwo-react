@@ -9,14 +9,25 @@ import Lobby from "../pages/Lobby/Lobby";
 import Game from "../pages/Game/Game";
 import HubConnectionProvider from "../context/HubConnectionContext";
 
+import { ThemeProvider } from "@material-ui/styles";
+import theme from "../themes/theme";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import { MuiThemeProvider } from "@material-ui/core";
+
 function App() {
     return (
         <div className="app">
-            <CookiesProvider>
-                <HubConnectionProvider>
-                    <Content />
-                </HubConnectionProvider>
-            </CookiesProvider>
+            <MuiThemeProvider theme={theme}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline>
+                        <CookiesProvider>
+                            <HubConnectionProvider>
+                                <Content />
+                            </HubConnectionProvider>
+                        </CookiesProvider>
+                    </CssBaseline>
+                </ThemeProvider>
+            </MuiThemeProvider>
         </div>
     );
 }
