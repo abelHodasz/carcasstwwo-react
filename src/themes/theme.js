@@ -32,13 +32,12 @@ let theme = createMuiTheme({
         fontWeight: 300,
         button: {
             textTransform: "capitalize",
-            fontSize: 18,
-            margin: 15,
+            fontSize: 16,
         },
         h1: {
             fontFamily: "Lindsay Becker",
             fontSize: 96,
-            margin: "15px 0",
+            margin: " 20px 0",
         },
         h2: {
             fontSize: 48,
@@ -46,7 +45,7 @@ let theme = createMuiTheme({
         h3: {
             fontWeight: 300,
             fontSize: 36,
-            margin: 10,
+            margin: 20,
         },
         h4: {
             fontSize: 28,
@@ -55,10 +54,10 @@ let theme = createMuiTheme({
             fontSize: 24,
         },
         body1: {
-            fontSize: 24,
+            fontSize: 18,
         },
         body2: {
-            fontSize: 24,
+            fontSize: 18,
         },
     },
 });

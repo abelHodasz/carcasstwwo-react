@@ -3,6 +3,7 @@ import {
     Button as Btn,
     TextField as TxtFd,
     Container as Cnt,
+    Typography as Tpg,
 } from "@material-ui/core";
 import styled from "styled-components";
 
@@ -20,9 +21,14 @@ const Box = styled(Bx)`
     }}
 `;
 
-const Button = styled(Btn)``;
+const Button = styled(Btn)`
+    margin: 15px;
+`;
 
 const TextField = styled(TxtFd)``;
 
 const Container = styled(Cnt)``;
-export { Box, Button, TextField, Container };
+
+const Typography = styled(Tpg)``;
+
+export { Box, Button, TextField, Container, Typography };

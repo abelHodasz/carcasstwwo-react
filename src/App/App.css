@@ -7,7 +7,9 @@ html {
 }
 
 body {
-  min-height: 100vh;
+  background: "#E7CC97";
+  background: top no-repeat url("../images/site/background-top.png"), bottom no-repeat url("../images/site/background-bottom.png"), content-box radial-gradient(circle, rgba(255, 213, 126, 0.53) 0, #e7cc97 100%);
+  background-size: 100% auto;
 }
 
 canvas {
@@ -15,10 +17,7 @@ canvas {
 }
 
 .app {
-  background: "#E7CC97";
-  background: radial-gradient(circle, rgba(255, 213, 126, 0.53) 0, #e7cc97 100%);
-  min-height: 100vh;
-  min-width: 100vw;
+  margin: 5%;
 }
 
 .loading {

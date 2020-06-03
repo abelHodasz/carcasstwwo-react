@@ -33,19 +33,25 @@ export default function Lobby(props) {
 
     if (users.length !== 0) {
         return (
-            <div className="lobby">
-                <div>Joined lobby : {code}</div>
-                <div className="users">{usersJsX}</div>
-                <Button
-                    className="start-btn"
-                    color="primary"
-                    onClick={onStartGame}
-                >
-                    Start
-                </Button>
+            <div className="app">
+                <div className="lobby">
+                    <div>Joined lobby : {code}</div>
+                    <div className="users">{usersJsX}</div>
+                    <Button
+                        className="start-btn"
+                        color="primary"
+                        onClick={onStartGame}
+                    >
+                        Start
+                    </Button>
+                </div>
             </div>
         );
     } else {
-        return <div className="lobby">Joined lobby : {code}</div>;
+        return (
+            <div className="app">
+                <div className="lobby">Joined lobby : {code}</div>
+            </div>
+        );
     }
 }
