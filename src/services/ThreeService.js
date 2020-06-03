@@ -13,10 +13,10 @@ import {
     MOUSE,
     Raycaster,
     Vector2,
+    TextureLoader,
 } from "three";
 //import { GUI } from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { findAllByDisplayValue } from "@testing-library/react";
 
 const CAMERA_FOV = 60;
 const ASPECT_RATIO = window.innerWidth / window.innerHeight;
@@ -60,33 +60,22 @@ export default class ThreeService {
         mount.appendChild(this.renderer.domElement);
         this.raycaster = new Raycaster();
         this.mouse = new Vector2(0, 0);
+        this.animations = [];
+        this.textures = new Map();
     }
 
     init() {
-        const [
-            scene,
-            gui,
-            camera,
-            grid,
-            renderer,
-            axesHelper,
-            hemLight,
-            spotLight,
-            spotLightHelper,
-            controls,
-            cameraHelper,
-        ] = [
+        const [scene, camera, grid, renderer, hemLight, spotLight, controls] = [
             this.scene,
-            this.gui,
+
             this.camera,
             this.grid,
             this.renderer,
-            this.axesHelper,
+
             this.hemLight,
             this.spotLight,
-            this.spotLightHelper,
+
             this.controls,
-            this.cameraHelper,
         ];
         //scene settings
         scene.traverse((child) => {
@@ -95,8 +84,6 @@ export default class ThreeService {
                 child.receiveShadow = true;
             }
         });
-
-        //gui settings
 
         //camera settings
         camera.position.set(0.5, 5, 0.5);
@@ -112,14 +99,9 @@ export default class ThreeService {
         renderer.toneMappingExposure = 1;
         renderer.toneMapping = ReinhardToneMapping;
         renderer.setSize(window.innerWidth, window.innerHeight);
-        //axesHelper settings
-        //scene.add(axesHelper);
 
         //hemisphere Light setings
         scene.add(hemLight);
-
-        //spotlight Helper settings
-        //scene.add(spotLightHelper);
 
         //spotlight settings
         spotLight.castShadow = true;
@@ -146,9 +128,6 @@ export default class ThreeService {
             this.camera.updateProjectionMatrix();
         });
 
-        //cameraHelper settings
-        //scene.add(cameraHelper);
-
         //raycaster, mouse
         document.addEventListener("mousemove", (e) => {
             e.preventDefault();
@@ -157,9 +136,33 @@ export default class ThreeService {
         });
     }
 
+    async loadTexturesAsync(sources) {
+        const loader = new TextureLoader();
+        console.log("loading images");
+        const promises = sources.map(
+            (src) =>
+                new Promise((resolve) => {
+                    loader.load(src, (texture) => {
+                        this.textures.set(src, texture);
+                        resolve();
+                    });
+                })
+        );
+        return Promise.all(promises);
+    }
+
+    loadTexture(src) {
+        return new TextureLoader().load(src);
+    }
+
+    getTexture(src) {
+        return this.textures.get(src) || this.loadTexture(src);
+    }
+
     animate = () => {
         this.renderer.render(this.scene, this.camera);
         this.raycaster.setFromCamera(this.mouse, this.camera);
+        this.animations.forEach((animate) => animate());
         requestAnimationFrame(this.animate);
     };
 }

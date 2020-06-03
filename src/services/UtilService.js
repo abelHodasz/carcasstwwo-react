@@ -12,3 +12,7 @@ export function getMousePosition(camera, mouse) {
     var pos = camera.position.clone().add(dir.multiplyScalar(distance));
     return pos;
 }
+
+export function toRadians(degree) {
+    return (degree * Math.PI) / 180;
+}

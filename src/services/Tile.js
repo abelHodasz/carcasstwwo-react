@@ -2,12 +2,13 @@ import * as THREE from "three";
 import { RoundedRectShape } from "./ThreeComponents";
 
 export class Tile {
-    constructor(image, tileId, position = null, rotation = null) {
+    constructor(texture, tileId, position = null, rotation = null) {
         this.tileId = tileId;
         var img = new THREE.MeshLambertMaterial({
             side: THREE.DoubleSide,
-            map: THREE.ImageUtils.loadTexture(image),
+            map: texture,
         });
+        console.log(img);
         img.map.needsUpdate = true;
         var roundedRectShape = new RoundedRectShape(0, 0, 1, 1, 0.05);
         var extrudeSettings = {
@@ -78,8 +79,8 @@ export class Tile {
 }
 
 export class PlacableTile extends Tile {
-    constructor(img, slots, tileId, cardId) {
-        super(img, tileId);
+    constructor(texture, slots, tileId, cardId) {
+        super(texture, tileId);
         this.cardId = cardId;
         this.possibleSlots = slots.map(({ position, rotations }) => {
             return new Slot(position, rotations);

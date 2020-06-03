@@ -8,17 +8,22 @@ import Home from "../pages/Home/Home";
 import Lobby from "../pages/Lobby/Lobby";
 import Game from "../pages/Game/Game";
 import HubConnectionProvider from "../context/HubConnectionContext";
-import TrialGame from "../pages/TrialGame/TrialGame";
+
+import { ThemeProvider } from "@material-ui/styles";
+import theme from "../themes/theme";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 function App() {
     return (
-        <div className="app">
-            <CookiesProvider>
-                <HubConnectionProvider>
-                    <Content />
-                </HubConnectionProvider>
-            </CookiesProvider>
-        </div>
+        <ThemeProvider theme={theme}>
+            <CssBaseline>
+                <CookiesProvider>
+                    <HubConnectionProvider>
+                        <Content />
+                    </HubConnectionProvider>
+                </CookiesProvider>
+            </CssBaseline>
+        </ThemeProvider>
     );
 }
 
@@ -27,7 +32,6 @@ function Content() {
         <Router history={history}>
             <Switch>
                 <Route path="/" exact component={Home} />
-                <Route path="/:code/trialgame" exact component={TrialGame} />
                 <Route path="/lobby/:code" component={Lobby} />
                 <Route path="/game/:code" component={Game} />
             </Switch>
