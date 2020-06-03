@@ -4,7 +4,6 @@ import { HubConnectionContext } from "../../context/HubConnectionContext";
 import { TextField, Button, Box, Container } from "../../themes/components";
 import { HubConnectionBuilder } from "@aspnet/signalr";
 import Loading from "../../components/Loading/Loading";
-import CarcassTwoLogo from "../../svg/carcassTwoLogo.svg";
 import CarcassonneIllustration from "../../images/site/carcassonne-illustration.png";
 import "./Home.css";
 
