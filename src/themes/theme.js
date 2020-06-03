@@ -37,7 +37,7 @@ let theme = createMuiTheme({
         h1: {
             fontFamily: "Lindsay Becker",
             fontSize: 96,
-            margin: " 20px 0",
+            margin: " 0 0 20px 0",
         },
         h2: {
             fontSize: 48,

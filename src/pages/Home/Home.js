@@ -71,7 +71,7 @@ export default function Home(props) {
                 <Box textAlign="center">
                     <Typography variant="h1">CarcassTwwo</Typography>
                 </Box>
-                <Grid container justify="center">
+                <Grid container justify="center" spacing={10}>
                     <Grid item xs={10} sm={6}>
                         <img
                             className="home-img"
@@ -83,6 +83,7 @@ export default function Home(props) {
                         <Box
                             display="flex"
                             flexDirection="column"
+                            className="home-content"
                             height="100%"
                         >
                             <Box component="section" centertext>

@@ -10,6 +10,7 @@ body {
   background: "#E7CC97";
   background: top no-repeat url("../images/site/background-top.png"), bottom no-repeat url("../images/site/background-bottom.png"), content-box radial-gradient(circle, rgba(255, 213, 126, 0.53) 0, #e7cc97 100%);
   background-size: 100% auto;
+  min-height: 100vh;
 }
 
 canvas {
@@ -17,7 +18,9 @@ canvas {
 }
 
 .app {
-  margin: 5%;
+  padding: 2% 5% 5% 5%;
+  max-width: 1200px;
+  margin: auto;
 }
 
 .loading {
@@ -26,5 +29,9 @@ canvas {
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
+}
+
+li {
+  list-style: none;
 }
 /*# sourceMappingURL=App.css.map */
