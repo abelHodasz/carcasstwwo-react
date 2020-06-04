@@ -12,6 +12,7 @@ import { HubConnectionBuilder } from "@aspnet/signalr";
 import CarcassonneIllustration from "../../images/site/carcassonne-illustration.png";
 import "./Home.css";
 import names from "../../data/names";
+import Loading from "../../components/Loading/Loading";
 
 export default function Home(props) {
     const [name, setName] = useState(
@@ -86,78 +87,90 @@ export default function Home(props) {
                             className="home-content"
                             height="100%"
                         >
-                            <Box component="section" centertext>
-                                <Typography variant="h3">
-                                    Change your name
-                                </Typography>
-                                <TextField
-                                    variant="outlined"
-                                    className="name-input"
-                                    label="Name"
-                                    size="small"
-                                    value={name}
-                                    onChange={(e) => {
-                                        setName(e.target.value);
-                                    }}
-                                ></TextField>
+                            <Box component="section" centertext="true">
+                                {!loading && (
+                                    <Fragment>
+                                        <Typography variant="h3">
+                                            Change your name
+                                        </Typography>
+                                        <TextField
+                                            variant="outlined"
+                                            className="name-input"
+                                            label="Name"
+                                            size="small"
+                                            value={name}
+                                            onChange={(e) => {
+                                                setName(e.target.value);
+                                            }}
+                                        ></TextField>
+                                    </Fragment>
+                                )}
                             </Box>
                             <Box
-                                centertext
+                                centertext="true"
                                 component="section"
                                 flexGrow="1"
                                 display="flex"
                                 flexDirection="column"
                                 style={{ height: "100%" }}
                             >
-                                <Typography variant="h3">
-                                    Create or Join a Lobby
-                                </Typography>
-                                <Grid
-                                    container
-                                    justify="center"
-                                    alignItems="center"
-                                >
-                                    <Grid item xs={12} sm={5}>
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            className="create-lobby-btn"
-                                            onClick={onCreateLobby}
-                                        >
-                                            Create Lobby
-                                        </Button>
-                                    </Grid>
-                                    <Grid item xs={12} sm={1}>
-                                        or
-                                    </Grid>
-                                    <Grid item xs={12} sm={6}>
-                                        <Box
-                                            display="flex"
-                                            flexDirection="column"
-                                            justifyContent="space-around"
+                                {loading ? (
+                                    <Loading></Loading>
+                                ) : (
+                                    <Fragment>
+                                        <Typography variant="h3">
+                                            Create or Join a Lobby
+                                        </Typography>
+                                        <Grid
+                                            container
+                                            justify="center"
                                             alignItems="center"
                                         >
-                                            <TextField
-                                                variant="outlined"
-                                                className="room-input"
-                                                id="standard-basic"
-                                                label="Room Code"
-                                                size="small"
-                                                onChange={(e) => {
-                                                    setRoom(e.target.value);
-                                                }}
-                                            ></TextField>
-                                            <Button
-                                                variant="contained"
-                                                color="secondary"
-                                                className="join-lobby-btn"
-                                                onClick={onJoinLobby}
-                                            >
-                                                Join Lobby
-                                            </Button>
-                                        </Box>
-                                    </Grid>
-                                </Grid>
+                                            <Grid item xs={12} sm={5}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    className="create-lobby-btn"
+                                                    onClick={onCreateLobby}
+                                                >
+                                                    Create Lobby
+                                                </Button>
+                                            </Grid>
+                                            <Grid item xs={12} sm={1}>
+                                                or
+                                            </Grid>
+                                            <Grid item xs={12} sm={6}>
+                                                <Box
+                                                    display="flex"
+                                                    flexDirection="column"
+                                                    justifyContent="space-around"
+                                                    alignItems="center"
+                                                >
+                                                    <TextField
+                                                        variant="outlined"
+                                                        className="room-input"
+                                                        id="standard-basic"
+                                                        label="Room Code"
+                                                        size="small"
+                                                        onChange={(e) => {
+                                                            setRoom(
+                                                                e.target.value
+                                                            );
+                                                        }}
+                                                    ></TextField>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        className="join-lobby-btn"
+                                                        onClick={onJoinLobby}
+                                                    >
+                                                        Join Lobby
+                                                    </Button>
+                                                </Box>
+                                            </Grid>
+                                        </Grid>
+                                    </Fragment>
+                                )}
                             </Box>
                         </Box>
                     </Grid>
