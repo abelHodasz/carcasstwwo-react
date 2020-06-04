@@ -16,6 +16,13 @@ const LindsayBeckerFont = {
 };
 
 let theme = createMuiTheme({
+    overrides: {
+        MuiCssBaseline: {
+            "@global": {
+                "@font-face": [LindsayBeckerFont],
+            },
+        },
+    },
     palette: {
         primary: {
             light: "#C5F1FF",
