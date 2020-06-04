@@ -45,7 +45,7 @@ export default function Game(props) {
                 name: "Máté",
                 id: 1,
                 me: false,
-                color: "00#00ff",
+                color: "#0000ff",
                 meepleCount: 6,
             },
         ];
@@ -81,8 +81,6 @@ export default function Game(props) {
                 setShowEndTurn(false);
             }
         }
-
-        console.log(position);
         const placedCard = carcassonne.getCurrentCard();
         // invoke end turn function on backend
         hubConnection.invoke("EndTurn", code, position, placedCard);
@@ -92,7 +90,7 @@ export default function Game(props) {
     const refreshBoard = (card) => {
         const position = new Vector3(card.coordinate.x, 0, -card.coordinate.y);
         carcassonne.createAndAddTile(
-            card.cardId,
+            card.tileId,
             position,
             parseInt(card.rotation)
         );
