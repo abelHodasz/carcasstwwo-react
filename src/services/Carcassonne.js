@@ -53,7 +53,7 @@ export default class Carcassonne {
 
     newTile(id, possibleSlots, cardId) {
         const texture = this.three.getTexture(getCardImage(id));
-        console.log(texture);
+
         const tile = new PlacableTile(texture, possibleSlots, id, cardId);
         this.currentTile = tile;
         tile.y = 1;
@@ -76,7 +76,8 @@ export default class Carcassonne {
     }
 
     createAndAddTile(cardId, position, rotation) {
-        const texture = this.three.getTexture(getCardImage(cardId));
+        const src = getCardImage(cardId);
+        const texture = this.three.getTexture(src);
         const tile = new Tile(texture, cardId, position, rotation);
         this.addTile(tile);
     }

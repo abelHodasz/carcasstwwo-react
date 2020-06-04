@@ -8,7 +8,6 @@ export class Tile {
             side: THREE.DoubleSide,
             map: texture,
         });
-        console.log(img);
         img.map.needsUpdate = true;
         var roundedRectShape = new RoundedRectShape(0, 0, 1, 1, 0.05);
         var extrudeSettings = {
