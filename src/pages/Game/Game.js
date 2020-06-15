@@ -7,9 +7,11 @@ import InfoBox from "../../components/InfoBox/InfoBox";
 import Carcassonne from "../../services/Carcassonne";
 import Loading from "../../components/Loading/Loading";
 import { images } from "../../Constants/Constants";
-import { Button, Box } from "@material-ui/core";
+import { Button, Box, Grid, Typography } from "@material-ui/core";
 import CONSTANTS from "../../Constants/Constants";
 import ThreeService from "../../services/ThreeService";
+
+import meepleSvg from "../../models/meeple.js";
 
 // Coordinates in three are different, that's why everywhere y(height) is constant and z(depth) is -y
 // x(width) remains the same
@@ -23,19 +25,71 @@ export default function Game(props) {
     const [loading, setLoading] = useState(true);
     const [players, setPlayers] = useState([]);
 
-    const playersJsx = players.map((player) => <span></span>);
+    const playersJsx = (
+        <Grid>
+            {players.map((player) => (
+                <span key={player.id}>
+                    <Grid item container jusity="center" alignItems="center">
+                        <Grid item xs="3">
+                            <Typography variant="h4">{player.name}</Typography>
+                        </Grid>
+                        <Grid item xs="2">
+                            <Typography>{player.score}</Typography>
+                        </Grid>
+                        <Grid item xs="7" className="meeple-img-container">
+                            <Box
+                                display="flex"
+                                justify="center"
+                                alignItems="center"
+                            >
+                                {Array(player.meepleCount).fill(
+                                    meepleSvg(player.color)
+                                )}
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </span>
+            ))}
+        </Grid>
+    );
+
+    const playersMock = [
+        {
+            id: 0,
+            name: "Ábel",
+            score: 200,
+            meepleCount: 7,
+            color: "#0000ff",
+            me: true,
+        },
+        {
+            id: 1,
+            name: "Iza",
+            score: 200,
+            meepleCount: 7,
+            color: "#00ff00",
+            me: false,
+        },
+        {
+            id: 2,
+            name: "Máté",
+            score: 200,
+            meepleCount: 7,
+            color: "#ff0000",
+            me: false,
+        },
+    ];
 
     const myTurn = async (card) => {
         // possible placement slots
         const possibleSlots = createPossibleSlotsObject(
             card.coordinatesWithRotations
         );
-
+        setPlayers(playersMock);
         // display the new tile
         carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
         // place the tile
         await carcassonne.placeTile();
-
         // send placement info to backend
         const placedCard = carcassonne.getCurrentCard();
         // invoke end placement function on backend
@@ -78,18 +132,25 @@ export default function Game(props) {
     };
 
     // add scores
-    const updatePlayers = (playersUpdate) => {
+    const updatePlayers = (playersUpdate = playersMock) => {
         if (players === []) setPlayers(playersUpdate);
         else {
             playersUpdate.forEach((newPlayer) => {
                 let player = players.filter(
                     (player) => player.id === newPlayer.id
                 );
-                player = { ...player, ...playersUpdate };
+                player = { ...player, ...newPlayer };
             });
         }
         console.log("Updated players: ", players);
     };
+
+    useEffect(() => {
+        if (carcassonne && players) {
+            console.log("Updated carcassonne players!", players);
+            carcassonne.players = players;
+        }
+    }, [players, carcassonne]);
 
     // catch backend events ( game logic )
     useEffect(() => {
