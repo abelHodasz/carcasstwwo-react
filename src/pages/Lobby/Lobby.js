@@ -38,7 +38,7 @@ export default function Lobby(props) {
             <Typography variant="h1">{code}</Typography>
             {!!users.length && (
                 <Fragment>
-                    <div className="users">{usersJsX}</div>
+                    <Box className="users">{usersJsX}</Box>
                     <Button
                         className="start-btn"
                         color="primary"
