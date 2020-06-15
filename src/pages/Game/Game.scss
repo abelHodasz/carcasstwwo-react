@@ -6,3 +6,24 @@
     top: 2%;
     left: 50%;
 }
+
+.scores {
+    position: absolute;
+    top: 2%;
+    right: 2%;
+    width: 400px;
+    height: auto;
+    background: "#E7CC97";
+    background: top no-repeat url("../../images/site/background-top.png"),
+        bottom no-repeat url("../../images/site/background-bottom.png");
+
+    background-size: 100% auto;
+    div {
+        padding: 10px 10px;
+    }
+    .meeple-svg {
+        filter: brightness(40%);
+        width: 20px;
+        height: auto;
+    }
+}
