@@ -7,7 +7,7 @@ import InfoBox from "../../components/InfoBox/InfoBox";
 import Carcassonne from "../../services/Carcassonne";
 import Loading from "../../components/Loading/Loading";
 import { images } from "../../Constants/Constants";
-import { Button } from "@material-ui/core";
+import { Button, Box } from "@material-ui/core";
 import CONSTANTS from "../../Constants/Constants";
 import ThreeService from "../../services/ThreeService";
 
@@ -21,6 +21,9 @@ export default function Game(props) {
     const { code } = useParams();
     const [showEndTurn, setShowEndTurn] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [players, setPlayers] = useState([]);
+
+    const playersJsx = players.map((player) => <span></span>);
 
     const myTurn = async (card) => {
         // possible placement slots
@@ -30,28 +33,6 @@ export default function Game(props) {
 
         // display the new tile
         carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
-
-        // mock object
-        const players = [
-            {
-                name: "Ábel",
-                id: 1,
-                me: false,
-                color: "#00ff00",
-                meepleCount: 5,
-            },
-            { name: "Iza", id: 1, me: true, color: "#ff0000", meepleCount: 2 },
-            {
-                name: "Máté",
-                id: 1,
-                me: false,
-                color: "#0000ff",
-                meepleCount: 6,
-            },
-        ];
-        //TODO: dont reassign new players every time
-        carcassonne.players = players;
-
         // place the tile
         await carcassonne.placeTile();
 
@@ -97,7 +78,18 @@ export default function Game(props) {
     };
 
     // add scores
-    const updatePlayers = (players) => {};
+    const updatePlayers = (playersUpdate) => {
+        if (players === []) setPlayers(playersUpdate);
+        else {
+            playersUpdate.forEach((newPlayer) => {
+                let player = players.filter(
+                    (player) => player.id === newPlayer.id
+                );
+                player = { ...player, ...playersUpdate };
+            });
+        }
+        console.log("Updated players: ", players);
+    };
 
     // catch backend events ( game logic )
     useEffect(() => {
@@ -142,17 +134,18 @@ export default function Game(props) {
         <>
             <InfoBox />
             {showEndTurn && (
-                <div className="end-turn-container">
+                <Box className="end-turn-container">
                     <Button className="end-turn" variant="outlined">
                         End turn
                     </Button>
-                </div>
+                </Box>
             )}
             {loading && (
-                <div className="loading">
+                <Box className="loading">
                     <Loading />
-                </div>
+                </Box>
             )}
+            <Box className="scores">{playersJsx}</Box>
             <div ref={(ref) => setMount(ref)}>
                 <div className="game"></div>
             </div>
