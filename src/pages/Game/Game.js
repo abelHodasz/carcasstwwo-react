@@ -97,7 +97,7 @@ export default function Game(props) {
     };
 
     // add scores
-    const addScores = (scores) => {};
+    const updatePlayers = (players) => {};
 
     // catch backend events ( game logic )
     useEffect(() => {
@@ -114,8 +114,8 @@ export default function Game(props) {
                 refreshBoard(card);
             });
 
-            hubConnection.on("AddScores", (scores) => {
-                addScores(scores);
+            hubConnection.on("UpdatePlayers", (players) => {
+                updatePlayers(players);
             });
         }
 
