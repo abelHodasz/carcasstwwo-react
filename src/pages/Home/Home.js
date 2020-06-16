@@ -25,6 +25,8 @@ export default function Home(props) {
         const hubConn = new HubConnectionBuilder()
             .withUrl("http://localhost:5000/lobby")
             .build();
+        hubConn.serverTimeoutInMilliseconds = 180000;
+        hubConn.keepAliveIntervalInMilliseconds = 90000;
         console.log(hubConn);
         setHubConnection(hubConn);
     }, [setHubConnection]);
