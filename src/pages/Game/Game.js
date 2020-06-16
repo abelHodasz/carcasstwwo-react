@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import "./Game.css";
-import { Vector3 } from "three";
+import { Vector3, Vector2 } from "three";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
 import InfoBox from "../../components/InfoBox/InfoBox";
 import Carcassonne from "../../services/Carcassonne";
@@ -47,10 +47,8 @@ export default function Game(props) {
     const placeMeeple = async (positions) => {
         // default value of position if no meeple is placed
         let position = -1;
-        console.log("ConnectionId", connectionId);
         if (positions !== null) {
             const [me] = carcassonne.players.filter((p) => {
-                console.log(p, connectionId);
                 return p.id === connectionId;
             });
             // if there are meeples
@@ -72,13 +70,27 @@ export default function Game(props) {
     };
 
     // display what other players placed
-    const refreshBoard = (card) => {
+    const refreshBoard = (card, meeplePosition, removedMeeplePositions) => {
+        console.log("REFRESH BOARD: ");
+        console.log("Card: ", card);
+        console.log("Meeple position: ", meeplePosition);
+        console.log("Removed meeples:");
+        console.table(removedMeeplePositions);
         const position = new Vector3(card.coordinate.x, 0, -card.coordinate.y);
         carcassonne.createAndAddTile(
             card.tileId,
             position,
             parseInt(card.rotation)
         );
+        //TODO: get meeple color
+        const meepleColor = "#ff0000";
+        if (meeplePosition !== -1) {
+            carcassonne.createAndAddMeeple(
+                new Vector2(card.coordinate.x, -card.coordinate.y),
+                meeplePosition,
+                meepleColor
+            );
+        }
     };
 
     // add scores
@@ -162,9 +174,12 @@ export default function Game(props) {
                 placeMeeple(positions);
             });
 
-            hubConnection.on("RefreshBoard", (card) => {
-                refreshBoard(card);
-            });
+            hubConnection.on(
+                "RefreshBoard",
+                (card, placeOfMeeple, meeplesToRemove) => {
+                    refreshBoard(card, placeOfMeeple, meeplesToRemove);
+                }
+            );
 
             hubConnection.on("UpdatePlayers", (players) => {
                 updatePlayers(players);
