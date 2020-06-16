@@ -3,7 +3,7 @@ import piece from "../models/Meeple.gltf";
 import { Mesh, MeshLambertMaterial, Box3, Vector3 } from "three";
 
 export default class Piece {
-    constructor(scene, color) {
+    constructor(scene, color, callback = () => {}) {
         var loader = new GLTFLoader();
         this.material = new MeshLambertMaterial({ color });
         this.model = null;
@@ -27,6 +27,7 @@ export default class Piece {
             this.center = center;
             scene.add(model);
             this.loaded = true;
+            callback();
         };
         loader.load(piece, loadMethod);
     }
