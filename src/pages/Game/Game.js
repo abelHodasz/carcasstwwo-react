@@ -24,68 +24,15 @@ export default function Game(props) {
     const [showEndTurn, setShowEndTurn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [players, setPlayers] = useState([]);
+    const [connectionId, setConnectionId] = useState(null);
 
-    const playersJsx = (
-        <Grid>
-            {players.map((player) => (
-                <span key={player.id}>
-                    <Grid item container jusity="center" alignItems="center">
-                        <Grid item xs="3">
-                            <Typography variant="h4">{player.name}</Typography>
-                        </Grid>
-                        <Grid item xs="2">
-                            <Typography>{player.score}</Typography>
-                        </Grid>
-                        <Grid item xs="7" className="meeple-img-container">
-                            <Box
-                                display="flex"
-                                justify="center"
-                                alignItems="center"
-                            >
-                                {Array(player.meepleCount).fill(
-                                    meepleSvg(player.color)
-                                )}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </span>
-            ))}
-        </Grid>
-    );
-
-    const playersMock = [
-        {
-            id: 0,
-            name: "Ábel",
-            score: 200,
-            meepleCount: 7,
-            color: "#0000ff",
-            me: true,
-        },
-        {
-            id: 1,
-            name: "Iza",
-            score: 200,
-            meepleCount: 7,
-            color: "#00ff00",
-            me: false,
-        },
-        {
-            id: 2,
-            name: "Máté",
-            score: 200,
-            meepleCount: 7,
-            color: "#ff0000",
-            me: false,
-        },
-    ];
+    const [playersJsx, setPlayersJsx] = useState(<span></span>);
 
     const myTurn = async (card) => {
         // possible placement slots
         const possibleSlots = createPossibleSlotsObject(
             card.coordinatesWithRotations
         );
-        setPlayers(playersMock);
         // display the new tile
         carcassonne.newTile(card.tileId, possibleSlots, card.cardId);
         // place the tile
@@ -100,9 +47,12 @@ export default function Game(props) {
     const placeMeeple = async (positions) => {
         // default value of position if no meeple is placed
         let position = -1;
-
+        console.log("ConnectionId", connectionId);
         if (positions !== null) {
-            const me = carcassonne.players.filter((p) => p.me)[0];
+            const [me] = carcassonne.players.filter((p) => {
+                console.log(p, connectionId);
+                return p.id === connectionId;
+            });
             // if there are meeples
             if (me.meepleCount > 0) {
                 // show button to end turn
@@ -132,29 +82,78 @@ export default function Game(props) {
     };
 
     // add scores
-    const updatePlayers = (playersUpdate = playersMock) => {
-        if (players === []) setPlayers(playersUpdate);
-        else {
-            playersUpdate.forEach((newPlayer) => {
-                let player = players.filter(
-                    (player) => player.id === newPlayer.id
-                );
-                player = { ...player, ...newPlayer };
-            });
-        }
-        console.log("Updated players: ", players);
+    const updatePlayers = (playersUpdate) => {
+        playersUpdate.map((newPlayer) => {
+            let player = players.filter((player) => player.id === newPlayer.id);
+            player = { ...player, ...newPlayer };
+            return player;
+        });
+        setPlayers(playersUpdate);
     };
 
     useEffect(() => {
         if (carcassonne && players) {
             console.log("Updated carcassonne players!", players);
             carcassonne.players = players;
+            setPlayersJsx(
+                <Grid>
+                    {players.map((player) => (
+                        <span key={player.id}>
+                            <Grid
+                                item
+                                container
+                                jusity="center"
+                                alignItems="center"
+                            >
+                                <Grid item xs={3}>
+                                    <Typography variant="h4">
+                                        {player.name}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Typography>{player.score}</Typography>
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={7}
+                                    className="meeple-img-container"
+                                >
+                                    <Box
+                                        display="flex"
+                                        justify="center"
+                                        alignItems="center"
+                                    >
+                                        {Array(player.meepleCount).fill(
+                                            meepleSvg(player.color)
+                                        )}
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </span>
+                    ))}
+                </Grid>
+            );
         }
     }, [players, carcassonne]);
 
+    useEffect(() => {
+        (async () => {
+            if (hubConnection != null) {
+                const data = await hubConnection.invoke("GetConnectionId");
+                setConnectionId(data);
+            }
+        })();
+    }, [hubConnection]);
+
     // catch backend events ( game logic )
     useEffect(() => {
-        if (hubConnection != null && carcassonne != null) {
+        if (
+            hubConnection != null &&
+            carcassonne != null &&
+            connectionId != null
+        ) {
+            hubConnection.invoke("Ready", code);
+
             hubConnection.on("Turn", (card) => {
                 myTurn(card);
             });
@@ -174,7 +173,7 @@ export default function Game(props) {
 
         // used functions are not dependencies -> disable warnings
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [hubConnection, carcassonne]);
+    }, [hubConnection, carcassonne, connectionId]);
 
     // initialize three js, create Carcassone object
     useEffect(() => {
