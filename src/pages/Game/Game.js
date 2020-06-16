@@ -70,7 +70,12 @@ export default function Game(props) {
     };
 
     // display what other players placed
-    const refreshBoard = (card, meeplePosition, removedMeeplePositions) => {
+    const refreshBoard = (
+        card,
+        meeplePosition,
+        removedMeeplePositions,
+        lastPlayer
+    ) => {
         console.log("REFRESH BOARD: ");
         console.log("Card: ", card);
         console.log("Meeple position: ", meeplePosition);
@@ -83,12 +88,14 @@ export default function Game(props) {
             parseInt(card.rotation)
         );
         //TODO: get meeple color
-        const meepleColor = "#ff0000";
+        const color = carcassonne.players.filter(
+            (player) => player.id === lastPlayer.connectionId
+        )[0].color;
         if (meeplePosition !== -1) {
             carcassonne.createAndAddMeeple(
                 new Vector2(card.coordinate.x, -card.coordinate.y),
                 meeplePosition,
-                meepleColor
+                color
             );
         }
     };
@@ -176,8 +183,13 @@ export default function Game(props) {
 
             hubConnection.on(
                 "RefreshBoard",
-                (card, placeOfMeeple, meeplesToRemove) => {
-                    refreshBoard(card, placeOfMeeple, meeplesToRemove);
+                (card, placeOfMeeple, meeplesToRemove, lastPlayer) => {
+                    refreshBoard(
+                        card,
+                        placeOfMeeple,
+                        meeplesToRemove,
+                        lastPlayer
+                    );
                 }
             );
 
