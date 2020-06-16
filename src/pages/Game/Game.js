@@ -47,7 +47,8 @@ export default function Game(props) {
     const placeMeeple = async (positions) => {
         // default value of position if no meeple is placed
         let position = -1;
-        if (positions !== null) {
+        console.log(positions);
+        if (positions.length) {
             const [me] = carcassonne.players.filter((p) => {
                 return p.id === connectionId;
             });
@@ -87,7 +88,6 @@ export default function Game(props) {
             position,
             parseInt(card.rotation)
         );
-        //TODO: get meeple color
         const color = carcassonne.players.filter(
             (player) => player.id === lastPlayer.connectionId
         )[0].color;
@@ -124,8 +124,8 @@ export default function Game(props) {
                                 jusity="center"
                                 alignItems="center"
                             >
-                                <Grid item xs={3}>
-                                    <Typography variant="h4">
+                                <Grid item xs={4}>
+                                    <Typography variant="h5">
                                         {player.name}
                                     </Typography>
                                 </Grid>
@@ -134,7 +134,7 @@ export default function Game(props) {
                                 </Grid>
                                 <Grid
                                     item
-                                    xs={7}
+                                    xs={6}
                                     className="meeple-img-container"
                                 >
                                     <Box
