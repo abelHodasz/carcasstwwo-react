@@ -24,8 +24,8 @@
 }
 
 .scores .meeple-svg {
-  -webkit-filter: brightness(40%);
-          filter: brightness(40%);
+  -webkit-filter: sepia(20%) brightness(140%);
+          filter: sepia(20%) brightness(140%);
   width: 20px;
   height: auto;
 }
