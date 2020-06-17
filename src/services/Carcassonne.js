@@ -86,7 +86,6 @@ export default class Carcassonne {
         const [newPosition] = this.getMeeplePositions(position.x, position.y, [
             meeplePosition,
         ]);
-        console.log(newPosition);
         const meeple = new Piece(this.three.scene, meepleColor, () => {
             meeple.setPosition(
                 new Vector3(newPosition.coord.x, 0, newPosition.coord.y)
@@ -95,7 +94,6 @@ export default class Carcassonne {
     }
 
     getMeeplePositions(x, y, positions, options = {}) {
-        console.log(positions);
         const d = options["meepleOffset"] || CONSTANTS.MEEPLE_OFFSET;
         /*
             1  2  3
