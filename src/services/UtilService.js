@@ -16,3 +16,14 @@ export function getMousePosition(camera, mouse) {
 export function toRadians(degree) {
     return (degree * Math.PI) / 180;
 }
+
+export function* getUniqueRandom() {
+    let arr = [];
+    while (true) {
+        let r = Math.floor(Math.random() * 10000) + 1;
+        if (arr.indexOf(r) === -1) {
+            arr.push(r);
+            yield r;
+        }
+    }
+}
