@@ -225,8 +225,8 @@ export default function Game(props) {
                     setLoading(false);
                     carcassonne.three.init();
                     carcassonne.three.animate();
+                    console.log("Images loaded");
                 });
-                console.log("images loaded");
             }
         })();
     }, [mount]);

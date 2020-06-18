@@ -1,15 +1,21 @@
-import { Mesh, MeshLambertMaterial, Box3, Vector3 } from "three";
+import { Mesh, MeshLambertMaterial } from "three";
+import { getCenter } from "../services/UtilService";
 
 export default class Piece {
     constructor(scene, color, model) {
         this.material = new MeshLambertMaterial({ color });
         this.model = model;
         this.isInPlace = false;
+        this.tileCoordinates = null;
+
         model.rotateX(0.5 * Math.PI);
+        const center = getCenter(this.model);
+        this.center = center;
+        this.model.position.sub(center);
+
         model.castShadow = true;
         model.receiveShadow = true;
-        const center = this.getCenter();
-        this.model.position.sub(center);
+
         model.traverse((node) => {
             if (node.isMesh || node instanceof Mesh) {
                 node.material = this.material;
@@ -17,10 +23,8 @@ export default class Piece {
                 node.castShadow = true;
             }
         });
-        this.center = center;
+
         scene.add(model);
-        this.loaded = true;
-        this.tileCoordinates = null;
     }
 
     get x() {
@@ -45,23 +49,12 @@ export default class Piece {
         this.model.position.z = val;
     }
 
-    getCenter() {
-        var box = new Box3().setFromObject(this.model);
-        var center = new Vector3();
-        box.getCenter(center);
-        center.y = 0.02;
-        return center;
-    }
-
     setPosition(newPosition) {
-        if (!this.loaded) {
-            return;
-        }
         this.model.position.copy(newPosition);
         this.model.position.sub(this.center);
     }
 
-    setTileCoordinates(coord) {
-        this.tileCoordinates = coord;
+    setTileCoordinates(coordinates) {
+        this.tileCoordinates = coordinates;
     }
 }

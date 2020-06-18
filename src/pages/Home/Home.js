@@ -27,7 +27,6 @@ export default function Home(props) {
             .build();
         hubConn.serverTimeoutInMilliseconds = 180000;
         hubConn.keepAliveIntervalInMilliseconds = 90000;
-        console.log(hubConn);
         setHubConnection(hubConn);
     }, [setHubConnection]);
 

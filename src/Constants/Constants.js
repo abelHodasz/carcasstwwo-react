@@ -62,6 +62,14 @@ const constants = {
     MEEPLE_OFFSET: 0.35,
     MEEPLE_SNAP_DISTANCE: 0.2,
     MEEPLE_INDICATOR_HEIGHT: 0.1,
+    ROUNDED_RECT_EXTRUDE_SETTINGS: {
+        depth: 0.01,
+        bevelEnabled: true,
+        bevelSegments: 1,
+        steps: 1,
+        bevelSize: 0.01,
+        bevelThickness: 0.01,
+    },
 };
 
 export default constants;

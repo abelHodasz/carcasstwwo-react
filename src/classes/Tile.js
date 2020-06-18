@@ -1,31 +1,31 @@
 import * as THREE from "three";
 import { RoundedRectShape } from "./ThreeComponents";
+import { LinearFilter } from "three";
+import CONSTANTS from "../Constants/Constants";
 
 export class Tile {
     constructor(texture, tileId, position = null, rotation = null) {
         this.tileId = tileId;
-        var img = new THREE.MeshLambertMaterial({
+        const img = new THREE.MeshLambertMaterial({
             side: THREE.DoubleSide,
             map: texture,
         });
+
         img.map.needsUpdate = true;
-        var roundedRectShape = new RoundedRectShape(0, 0, 1, 1, 0.05);
-        var extrudeSettings = {
-            depth: 0.01,
-            bevelEnabled: true,
-            bevelSegments: 1,
-            steps: 1,
-            bevelSize: 0.01,
-            bevelThickness: 0.01,
-        };
-        var geometry = new THREE.ExtrudeBufferGeometry(
+        img.map.minFilter = LinearFilter;
+
+        const roundedRectShape = new RoundedRectShape(0, 0, 1, 1, 0.05);
+        const geometry = new THREE.ExtrudeBufferGeometry(
             roundedRectShape,
-            extrudeSettings
+            CONSTANTS.ROUNDED_RECT_EXTRUDE_SETTINGS
         );
         geometry.translate(-0.5, -0.5, 0);
+
         this.mesh = new THREE.Mesh(geometry, img);
+
         this.mesh.castShadow = true;
         this.mesh.receiveShadow = true;
+
         this.mesh.rotateX(-0.5 * Math.PI);
         this.mesh.traverse((n) => {
             if (n.isMesh) {
@@ -40,6 +40,7 @@ export class Tile {
             this.y = position.y;
             this.z = position.z;
         }
+
         if (rotation) {
             this.mesh.rotation.z = (rotation * Math.PI) / 180;
         }
@@ -73,6 +74,7 @@ export class Tile {
             map: THREE.ImageUtils.loadTexture(src),
         });
         img.map.needsUpdate = true;
+        img.map.minFilter = LinearFilter;
         this.mesh.material = img;
     }
 }
