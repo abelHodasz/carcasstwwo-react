@@ -7,6 +7,8 @@ import { getMousePosition, toRadians } from "./UtilService";
 import { getCardImage } from "../Constants/Constants";
 import CONSTANTS from "../Constants/Constants";
 import { Vector2, Vector3 } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import piece from "../models/Meeple.gltf";
 
 const BOARD_SIZE = 50;
 
@@ -25,6 +27,21 @@ export default class Carcassonne {
         this._players = [];
         this.meeplePosition = -1;
         this.meepleIndicators = [];
+        this.meepleModel = null;
+    }
+
+    async loadMeepleModel() {
+        return new Promise((resolve, reject) => {
+            var loader = new GLTFLoader();
+            loader.load(
+                piece,
+                (result) => {
+                    resolve(result.scene.children[2]);
+                },
+                null,
+                reject
+            );
+        });
     }
 
     set players(value) {
@@ -62,8 +79,13 @@ export default class Carcassonne {
         this.three.scene.add(tile.mesh);
     }
 
-    newMeeple(color) {
-        this.meeple = new Piece(this.three.scene, color);
+    newMeeple(color, tileCoords) {
+        this.meeple = new Piece(
+            this.three.scene,
+            color,
+            this.meepleModel.clone()
+        );
+        this.meeple.setTileCoordinates(tileCoords);
     }
 
     addTile(tile) {
@@ -83,14 +105,32 @@ export default class Carcassonne {
     }
 
     createAndAddMeeple(position, meeplePosition, meepleColor) {
-        const [newPosition] = this.getMeeplePositions(position.x, position.y, [
+        const [newPosition] = this.getMeeplePositions(position.x, -position.y, [
             meeplePosition,
         ]);
-        const meeple = new Piece(this.three.scene, meepleColor, () => {
-            meeple.setPosition(
-                new Vector3(newPosition.coord.x, 0, newPosition.coord.y)
-            );
-        });
+
+        const meeple = new Piece(
+            this.three.scene,
+            meepleColor,
+            this.meepleModel.clone()
+        );
+        meeple.setPosition(
+            new Vector3(newPosition.coord.x, 0, newPosition.coord.y)
+        );
+        meeple.setTileCoordinates(position);
+        this.meeples.push(meeple);
+    }
+
+    removeMeeple(coords) {
+        console.log("Remove meeple coords: ", coords);
+        console.log("Meeples : ", this.meeples);
+        const [meepleToRemove] = this.meeples.filter(
+            (meeple) =>
+                meeple.tileCoordinates.x === coords.x &&
+                meeple.tileCoordinates.y === coords.y
+        );
+        console.log("Meeple to remove: ", meepleToRemove);
+        meepleToRemove && this.removeFromScene(meepleToRemove.model);
     }
 
     getMeeplePositions(x, y, positions, options = {}) {
