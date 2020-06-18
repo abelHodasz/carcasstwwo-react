@@ -12,9 +12,11 @@ import CONSTANTS from "../../Constants/Constants";
 import ThreeService from "../../services/ThreeService";
 
 import meepleSvg from "../../models/meeple.js";
-
+import { getUniqueRandom } from "../../services/UtilService";
 // Coordinates in three are different, that's why everywhere y(height) is constant and z(depth) is -y
 // x(width) remains the same
+
+const random = getUniqueRandom();
 
 export default function Game(props) {
     const [mount, setMount] = useState(null);
@@ -46,8 +48,8 @@ export default function Game(props) {
     // place meeple if there are available
     const placeMeeple = async (positions) => {
         // default value of position if no meeple is placed
+        const placedCard = carcassonne.getCurrentCard();
         let position = -1;
-        console.log(positions);
         if (positions.length) {
             const [me] = carcassonne.players.filter((p) => {
                 return p.id === connectionId;
@@ -57,7 +59,13 @@ export default function Game(props) {
                 // show button to end turn
                 setShowEndTurn(true);
                 // display meeple if there's one available
-                carcassonne.newMeeple(me.color);
+                carcassonne.newMeeple(
+                    me.color,
+                    new Vector2(
+                        placedCard.Coordinate.x,
+                        placedCard.Coordinate.y
+                    )
+                );
                 // place the meeple
                 position = await carcassonne.placeMeeple(positions);
 
@@ -65,23 +73,13 @@ export default function Game(props) {
                 setShowEndTurn(false);
             }
         }
-        const placedCard = carcassonne.getCurrentCard();
+
         // invoke end turn function on backend
         hubConnection.invoke("EndTurn", code, position, placedCard);
     };
 
     // display what other players placed
-    const refreshBoard = (
-        card,
-        meeplePosition,
-        removedMeeplePositions,
-        lastPlayer
-    ) => {
-        console.log("REFRESH BOARD: ");
-        console.log("Card: ", card);
-        console.log("Meeple position: ", meeplePosition);
-        console.log("Removed meeples:");
-        console.table(removedMeeplePositions);
+    const refreshBoard = async (card, meeplePosition, lastPlayer) => {
         const position = new Vector3(card.coordinate.x, 0, -card.coordinate.y);
         carcassonne.createAndAddTile(
             card.tileId,
@@ -93,7 +91,7 @@ export default function Game(props) {
         )[0].color;
         if (meeplePosition !== -1) {
             carcassonne.createAndAddMeeple(
-                new Vector2(card.coordinate.x, -card.coordinate.y),
+                new Vector2(card.coordinate.x, card.coordinate.y),
                 meeplePosition,
                 color
             );
@@ -110,9 +108,18 @@ export default function Game(props) {
         setPlayers(playersUpdate);
     };
 
+    const removeMeeples = (meeplesToRemove) => {
+        meeplesToRemove.forEach((meeplePos) => {
+            const coords = new Vector2(
+                meeplePos.coordinate.x,
+                meeplePos.coordinate.y
+            );
+            carcassonne.removeMeeple(coords);
+        });
+    };
+
     useEffect(() => {
         if (carcassonne && players) {
-            console.log("Updated carcassonne players!", players);
             carcassonne.players = players;
             setPlayersJsx(
                 <Grid>
@@ -142,9 +149,14 @@ export default function Game(props) {
                                         justify="center"
                                         alignItems="center"
                                     >
-                                        {Array(player.meepleCount).fill(
-                                            meepleSvg(player.color)
-                                        )}
+                                        {Array(player.meepleCount)
+                                            .fill(0)
+                                            .map(() =>
+                                                meepleSvg(
+                                                    player.color,
+                                                    random.next().value
+                                                )
+                                            )}
                                     </Box>
                                 </Grid>
                             </Grid>
@@ -183,15 +195,14 @@ export default function Game(props) {
 
             hubConnection.on(
                 "RefreshBoard",
-                (card, placeOfMeeple, meeplesToRemove, lastPlayer) => {
-                    refreshBoard(
-                        card,
-                        placeOfMeeple,
-                        meeplesToRemove,
-                        lastPlayer
-                    );
+                (card, placeOfMeeple, lastPlayer) => {
+                    refreshBoard(card, placeOfMeeple, lastPlayer);
                 }
             );
+
+            hubConnection.on("RemoveMeeples", (meeplesToRemove) => {
+                removeMeeples(meeplesToRemove);
+            });
 
             hubConnection.on("UpdatePlayers", (players) => {
                 updatePlayers(players);
@@ -204,17 +215,20 @@ export default function Game(props) {
 
     // initialize three js, create Carcassone object
     useEffect(() => {
-        if (mount != null) {
-            const three = new ThreeService(mount);
-            const carcassonne = new Carcassonne(three);
-            setCarcassone(carcassonne);
-            three.loadTexturesAsync(Object.values(images)).then(() => {
-                setLoading(false);
-                carcassonne.three.init();
-                carcassonne.three.animate();
-            });
-            console.log("images loaded");
-        }
+        (async () => {
+            if (mount != null) {
+                const three = new ThreeService(mount);
+                const carcassonne = new Carcassonne(three);
+                carcassonne.meepleModel = await carcassonne.loadMeepleModel();
+                setCarcassone(carcassonne);
+                three.loadTexturesAsync(Object.values(images)).then(() => {
+                    setLoading(false);
+                    carcassonne.three.init();
+                    carcassonne.three.animate();
+                });
+                console.log("images loaded");
+            }
+        })();
     }, [mount]);
 
     return (
