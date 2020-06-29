@@ -1,0 +1,33 @@
+.game {
+  position: absolute;
+}
+
+.end-turn-container {
+  position: absolute;
+  top: 2%;
+  left: 50%;
+  z-index: 3;
+}
+
+.scores {
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  width: 400px;
+  height: auto;
+  background: "#E7CC97";
+  background: top no-repeat url("../../images/site/background-top.png"), bottom no-repeat url("../../images/site/background-bottom.png");
+  background-size: 100% auto;
+}
+
+.scores div {
+  padding: 10px 10px;
+}
+
+.scores .meeple-svg {
+  -webkit-filter: sepia(20%) brightness(140%);
+          filter: sepia(20%) brightness(140%);
+  width: 20px;
+  height: auto;
+}
+/*# sourceMappingURL=Game.css.map */
