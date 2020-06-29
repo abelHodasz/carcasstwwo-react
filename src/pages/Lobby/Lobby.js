@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, Fragment } from "react";
 import { useParams } from "react-router-dom";
 import { HubConnectionContext } from "../../context/HubConnectionContext";
-import { Typography, Box, Button, Container } from "../../themes/components";
+import { Typography, Box, Button } from "../../themes/components";
 
 export default function Lobby(props) {
     const { code } = useParams();
@@ -33,12 +33,12 @@ export default function Lobby(props) {
     };
 
     return (
-        <Box centertext className="app">
+        <Box centertext="true" className="app">
             <Typography variant="h2">Joined lobby : </Typography>
             <Typography variant="h1">{code}</Typography>
             {!!users.length && (
                 <Fragment>
-                    <div className="users">{usersJsX}</div>
+                    <Box className="users">{usersJsX}</Box>
                     <Button
                         className="start-btn"
                         color="primary"

@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { Vector3, Box3 } from "three";
 
 export function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
@@ -15,4 +15,23 @@ export function getMousePosition(camera, mouse) {
 
 export function toRadians(degree) {
     return (degree * Math.PI) / 180;
+}
+
+export function* getUniqueRandom() {
+    let arr = [];
+    while (true) {
+        let r = getRandomInt(100000) + 1;
+        if (arr.indexOf(r) === -1) {
+            arr.push(r);
+            yield r;
+        }
+    }
+}
+
+export function getCenter(model) {
+    var box = new Box3().setFromObject(model);
+    var center = new Vector3();
+    box.getCenter(center);
+    center.y = 0.02;
+    return center;
 }

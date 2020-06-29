@@ -1,30 +1,56 @@
-import { Tile, PlacableTile } from "./Tile";
-import Piece from "./Piece";
-import Board from "./Board";
-import Player from "./Player";
-import DottedCircle from "./DottedCircle";
+import { Tile, PlacableTile } from "../classes/Tile";
+import Meeple from "../classes/Meeple";
+import Board from "../classes/Board";
+import Player from "../classes/Player";
+import { DottedCircle } from "../classes/ThreeComponents";
 import { getMousePosition, toRadians } from "./UtilService";
 import { getCardImage } from "../Constants/Constants";
 import CONSTANTS from "../Constants/Constants";
 import { Vector2, Vector3 } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import meepleModel from "../models/Meeple.gltf";
 
 const BOARD_SIZE = 50;
 
 export default class Carcassonne {
     constructor(three) {
         this.three = three;
-        const img = getCardImage(CONSTANTS.STARTING_TILE);
-        const texture = this.three.loadTexture(img);
-        const startingTile = new Tile(texture);
+
         this.tiles = [];
-        this.addTile(startingTile);
+
         this.board = new Board(BOARD_SIZE, BOARD_SIZE, CONSTANTS.SNAP_HEIGHT);
+        this.three.scene.add(this.board.mesh);
+
         this.meeple = null;
         this.meeples = [];
-        this.three.scene.add(this.board.mesh);
-        this._players = [];
         this.meeplePosition = -1;
         this.meepleIndicators = [];
+        this.meepleModel = null;
+
+        this._players = [];
+
+        const startingTile = this.getStarterTile();
+        this.addTile(startingTile);
+    }
+
+    getStarterTile() {
+        const img = getCardImage(CONSTANTS.STARTING_TILE);
+        const texture = this.three.loadTexture(img);
+        return new Tile(texture);
+    }
+
+    async loadMeepleModel() {
+        return new Promise((resolve, reject) => {
+            var loader = new GLTFLoader();
+            loader.load(
+                meepleModel,
+                (result) => {
+                    resolve(result.scene.children[2]);
+                },
+                null,
+                reject
+            );
+        });
     }
 
     set players(value) {
@@ -53,7 +79,7 @@ export default class Carcassonne {
 
     newTile(id, possibleSlots, cardId) {
         const texture = this.three.getTexture(getCardImage(id));
-        console.log(texture);
+
         const tile = new PlacableTile(texture, possibleSlots, id, cardId);
         this.currentTile = tile;
         tile.y = 1;
@@ -62,8 +88,13 @@ export default class Carcassonne {
         this.three.scene.add(tile.mesh);
     }
 
-    newMeeple(color) {
-        this.meeple = new Piece(this.three.scene, color);
+    newMeeple(color, tileCoords) {
+        this.meeple = new Meeple(
+            this.three.scene,
+            color,
+            this.meepleModel.clone()
+        );
+        this.meeple.setTileCoordinates(tileCoords);
     }
 
     addTile(tile) {
@@ -76,9 +107,36 @@ export default class Carcassonne {
     }
 
     createAndAddTile(cardId, position, rotation) {
-        const texture = this.three.getTexture(getCardImage(cardId));
+        const src = getCardImage(cardId);
+        const texture = this.three.getTexture(src);
         const tile = new Tile(texture, cardId, position, rotation);
         this.addTile(tile);
+    }
+
+    createAndAddMeeple(position, meeplePosition, meepleColor) {
+        const [newPosition] = this.getMeeplePositions(position.x, -position.y, [
+            meeplePosition,
+        ]);
+
+        const meeple = new Meeple(
+            this.three.scene,
+            meepleColor,
+            this.meepleModel.clone()
+        );
+        meeple.setPosition(
+            new Vector3(newPosition.coord.x, 0, newPosition.coord.y)
+        );
+        meeple.setTileCoordinates(position);
+        this.meeples.push(meeple);
+    }
+
+    removeMeeple(coords) {
+        const [meepleToRemove] = this.meeples.filter(
+            (meeple) =>
+                meeple.tileCoordinates.x === coords.x &&
+                meeple.tileCoordinates.y === coords.y
+        );
+        meepleToRemove && this.removeFromScene(meepleToRemove.model);
     }
 
     getMeeplePositions(x, y, positions, options = {}) {
@@ -197,7 +255,6 @@ export default class Carcassonne {
 
         return new Promise((resolve) => {
             const mousemove = () => {
-                if (!meeple.loaded) return;
                 const mousePosition = getMousePosition(
                     three.camera,
                     three.mouse
