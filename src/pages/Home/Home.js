@@ -16,6 +16,10 @@ import names from "../../data/names";
 import Loading from "../../components/Loading/Loading";
 
 export default function Home(props) {
+    const url =
+        process.env.NODE_ENV === "production"
+            ? "http://carcasstwwo.herokuapp.com/lobby"
+            : "http://localhost:5000/lobby";
     const [name, setName] = useState(
         names[Math.floor(Math.random() * names.length)]
     );
@@ -26,13 +30,11 @@ export default function Home(props) {
     const [errorMessage, setErrorMessage] = useState("");
     const [password, setPassword] = useState("");
     useEffect(() => {
-        const hubConn = new HubConnectionBuilder()
-            .withUrl("http://localhost:5000/lobby")
-            .build();
+        const hubConn = new HubConnectionBuilder().withUrl(url).build();
         hubConn.serverTimeoutInMilliseconds = 180000;
         hubConn.keepAliveIntervalInMilliseconds = 90000;
         setHubConnection(hubConn);
-    }, [setHubConnection]);
+    }, [setHubConnection, url]);
 
     useEffect(() => {
         if (hubConnection != null)
