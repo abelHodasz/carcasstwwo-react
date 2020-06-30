@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_URL = "https://localhost:5001/api/v1";
+const API_URL =
+    process.env.NODE_ENV === "production"
+        ? "http://carcasstwwo.herokuapp.com"
+        : "http://localhost:5000";
+
 const TIMEOUT = 5000;
 
 const instance = axios.create({
