@@ -18,8 +18,8 @@ import Loading from "../../components/Loading/Loading";
 export default function Home(props) {
     const url =
         process.env.NODE_ENV === "production"
-            ? "http://carcasstwwo.herokuapp.com/lobby"
-            : "http://localhost:5000/lobby";
+            ? "https://carcasstwwo.herokuapp.com/lobby"
+            : "https://localhost:5000/lobby";
     const [name, setName] = useState(
         names[Math.floor(Math.random() * names.length)]
     );

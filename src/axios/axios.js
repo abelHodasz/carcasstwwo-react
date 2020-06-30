@@ -2,8 +2,8 @@ import axios from "axios";
 
 const API_URL =
     process.env.NODE_ENV === "production"
-        ? "http://carcasstwwo.herokuapp.com"
-        : "http://localhost:5000";
+        ? "https://carcasstwwo.herokuapp.com"
+        : "https://localhost:5000";
 
 const TIMEOUT = 5000;
 
