@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_URL =
     process.env.NODE_ENV === "production"
-        ? "https://carcasstwwo.herokuapp.com"
+        ? "https://cors-anywhere.herokuapp.com/https://carcasstwwo.herokuapp.com"
         : "http://localhost:5000";
 
 const TIMEOUT = 5000;
