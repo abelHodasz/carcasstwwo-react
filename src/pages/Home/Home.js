@@ -19,7 +19,7 @@ export default function Home(props) {
     const url =
         process.env.NODE_ENV === "production"
             ? "https://carcasstwwo.herokuapp.com/lobby"
-            : "https://localhost:5000/lobby";
+            : "http://localhost:5000/lobby";
     const [name, setName] = useState(
         names[Math.floor(Math.random() * names.length)]
     );
