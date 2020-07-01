@@ -4,23 +4,31 @@ TODO: Give a short introduction of your project. Let this section explain the ob
 
 # Getting Started
 
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
+Carcasstwwo is an online implementation of the famous boardgame Carcassonne. Carcassonne is a tile-placement game in which the players draw and place a tile with a piece of southern French landscape on it. The tile might feature a city, a road, a cloister, grassland or some combination thereof. Having placed a tile, the player can then decide to place one of their meeples on one of the areas on it. When that area is complete, that meeple scores points for its owner.
 
-1. Installation process
-2. Software dependencies
-3. Latest releases
-4. API references
+# About the Project
 
-# Build and Test
+This Project was a team exercise during my studies at Codecool.
+The task was to create an online carcassonne, which you can play with other players.
+We achieved this buy creating a real-time web application, where you can create and join lobbies.
 
-TODO: Describe and show how to build your code and run the tests.
+The application's backend API can be found [here]() on GitHub.
 
-# Contribute
+# Used Technologies
 
-TODO: Explain how other users and developers can contribute to make your code better.
+Frontend:
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
+-   React
+-   Three.js
+-   Material UI
 
--   [ASP.NET Core](https://github.com/aspnet/Home)
--   [Visual Studio Code](https://github.com/Microsoft/vscode)
--   [Chakra Core](https://github.com/Microsoft/ChakraCore)
+Backend:
+
+-   ASP.NET Core
+-   SignalR
+
+# Contributors
+
+-   [Máté Iszlai](https://github.com/mateIszlai)
+-   [Izabella Dolezsár](https://github.com/dolezsariza)
+-   [Ábel Hodász](https://github.com/abelHodasz)
