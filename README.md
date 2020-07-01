@@ -26,6 +26,7 @@ Backend:
 
 -   ASP.NET Core
 -   SignalR
+-   NUnit, NSubstitute
 
 # Contributors
 
